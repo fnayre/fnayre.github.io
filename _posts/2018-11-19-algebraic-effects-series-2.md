@@ -7,10 +7,10 @@ categories: algebraic-effects
 
 This is the second part of a series about Algebraic Effects and Handlers.
 
-- Part 1 : [continuations and control transfer](2018-11-19-algebraic-effects-series-1.md)
+- Part 1 : [continuations and control transfer]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-1 %})
 - **Part 2 : Capturing continuations with Generators**
-- Part 3 : [Delimited continuations](2018-11-19-algebraic-effects-series-3.md)
-- Part 4 : [Algebraic Effects and handlers](2018-11-19-algebraic-effects-series-4.md)
+- Part 3 : [Delimited continuations]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-3 %})
+- Part 4 : [Algebraic Effects and handlers]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-4 %})
 
 > Note: initially I planned a 3-part series, but since the current post on undelimited continuations ended up taking
 > more space than intended. We'll treat delimited continuations in a separate post

@@ -7,9 +7,9 @@ categories: algebraic-effects
 
 This is the final part of a series about Algebraic Effects and Handlers.
 
-- Part 1 : [continuations and control transfer](2018-11-19-algebraic-effects-series-1.md)
-- Part 2 : [Capturing continuations with Generators](2018-11-19-algebraic-effects-series-2.md)
-- Part 3 : [Delimited continuations](2018-11-19-algebraic-effects-series-3.md)
+- Part 1 : [continuations and control transfer]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-1 %})
+- Part 2 : [Capturing continuations with Generators]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-2 %})
+- Part 3 : [Delimited continuations]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-3 %})
 - **Part 4 : Implementing Algebraic Effects and handlers**
 
 So we've come to the core topic. The reality is that we've already covered most of it in the previous parts. Especially, in the third part, where we saw delimited continuations at work.

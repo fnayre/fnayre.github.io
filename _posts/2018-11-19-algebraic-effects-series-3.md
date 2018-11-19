@@ -7,10 +7,10 @@ categories: algebraic-effects
 
 This is the third part of a series about Algebraic Effects and Handlers.
 
-- Part 1 : [continuations and control transfer](2018-11-19-algebraic-effects-series-1.md)
-- Part 2 : [Capturing continuations with Generators](2018-11-19-algebraic-effects-series-2.md)
+- Part 1 : [continuations and control transfer]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-1 %})
+- Part 2 : [Capturing continuations with Generators]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-2 %})
 - **Part 3 : Delimited continuations**
-- Part 4 : [Algebraic Effects and handlers](2018-11-19-algebraic-effects-series-4.md)
+- Part 4 : [Algebraic Effects and handlers]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-4 %})
 
 In the preceding parts, we introduced the notions of continuations and control transfer. We saw how to capture the current
 continuation inside a Generator, and illustrated how to implement (the one shot version) of the famous `callcc`.

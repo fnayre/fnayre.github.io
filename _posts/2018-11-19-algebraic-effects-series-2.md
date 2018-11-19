@@ -13,9 +13,6 @@ This is the second part of a series about Algebraic Effects and Handlers.
 - Part 3 : [Delimited continuations]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-3 %})
 - Part 4 : [Algebraic Effects and handlers]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-4 %})
 
-> Note: initially I planned a 3-part series, but since the current post on undelimited continuations ended up taking
-> more space than intended. We'll treat delimited continuations in a separate post
-
 In the [first post](2018-11-19-algebraic-effects-series-1.md) we introduced
 the notions of continuation and control transfer. We saw how programs written in Continuation
 Passing Style (CPS) are more flexible in terms of control transfer manipulation.

@@ -17,7 +17,7 @@ Both approaches are valuables and give different insights on the topic. However,
 
 So we'll take the operational road. We'll work out our way through a serie of examples and build, progressively, the intuition on the introduced concepts. By the end of this serie, we'll have a working implementation of Algebraic Effects based on JavaScript Generators.
 
-Since this is going to be a long topic, we'll split it in ~3~ 4 parts:
+Since this is going to be a long topic, we'll split it in 4 parts:
 
 - **First we need to familiarize with the concepts of Continuations and Control Transfer**
 - Next post we'll see [how to use Generators to capture Continuations]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-2 %})

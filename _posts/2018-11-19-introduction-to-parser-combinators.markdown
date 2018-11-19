@@ -1,3 +1,9 @@
+---
+layout: post
+title:  "Gentle introduction to Parser Combinators"
+date:   2018-11-19 12:04:27 +0100
+categories: parsers
+---
 In this tutorial we're going to build a set of parser combinators.
 
 ## What is a parser combinator?

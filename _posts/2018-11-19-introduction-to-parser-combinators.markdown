@@ -1,9 +1,11 @@
 ---
 layout: post
-title:  "Gentle introduction to Parser Combinators"
-date:   2018-11-19 12:04:27 +0100
+comments: true
+title: "Gentle introduction to Parser Combinators"
+date: 2018-11-19 12:04:27 +0100
 categories: parsers
 ---
+
 In this tutorial we're going to build a set of parser combinators.
 
 ## What is a parser combinator?
@@ -175,7 +177,7 @@ function plusExpr(input) {
 
   // one last check
   if (input3.length > 0) {
-    return failure("end of input", input3);
+    return failure("end of input", input3);
   }
   // everything is allright. returns the final result
   return success(int1 + int2, input3);
@@ -207,8 +209,8 @@ So far so good. But for our parser to be practical we need to make some improvem
 1. we would like to have some resuable way parse more things and not just numbers.
 2. we need also some reusable way to create sequences like in `plusExpr`. Right now sequencing parsers involves some boilerplate:
 
-* at each step we must check if the result is an error to decide whether we should continue or stop
-* we need also to take care of passing the rest of the input to the next parser
+- at each step we must check if the result is an error to decide whether we should continue or stop
+- we need also to take care of passing the rest of the input to the next parser
 
 This may not seem too much. But remember that in practice we'll be creating this kind of sequences a lot of time. So abstracting this someway is going to make our life easier.
 
@@ -533,7 +535,7 @@ const token = lexeme(spaces);
 const expr = apply((_, num1, opFunc, num2) => opFunc(num1, num2), [
   spaces, // skips leading spaces
   token(decimal),
-  token(label(op, "an arithmetic operator")),
+  token(label(op, "an arithmetic operator")),
   token(decimal), // skips trailing spaces
   eof
 ]);
@@ -642,10 +644,11 @@ const expr = go(function*() {
   yield spaces;
   const num1 = yield decimal;
   const rest = yield many(collect(op, decimal));
-  yield eof
-  return rest.reduce((acc, [opFunc, num]) => opFunc(acc, num), num1)
+  yield eof;
+  return rest.reduce((acc, [opFunc, num]) => opFunc(acc, num), num1);
 });
 ```
+
 ```sh
 $ parse(expr, '1 + 2 + 3 + 4')
   >> {data: 10, rest: ""}
@@ -657,14 +660,14 @@ A single post can not cover parser combinators in detail. For those who want to 
 
 Here are things that still need to be covered (may do that in later posts)
 
-* Lookahead: For example Our `oneOf` definition allows for an arbitrary lookahead. It means that even if an alternative consumes an arbitrary amount of input before failing, `oneOf` will always restart the next alternative from the begining of the current input.
+- Lookahead: For example Our `oneOf` definition allows for an arbitrary lookahead. It means that even if an alternative consumes an arbitrary amount of input before failing, `oneOf` will always restart the next alternative from the begining of the current input.
 
 This is not efficient in practice and doesnt allow for proper error reporting. In practice we may better restrict the lookahead so that `oneOf` will not try another alternative if the current one has failed while consuming some input. This will also allow for better error reporting since we can propagate exactly what's expected at a specific location.
 
-* (Proper) Error reporting, this includes reporting the exact location of the failure as well as the expected items at that location while still allowing developpers to plug in their own error messages.
+- (Proper) Error reporting, this includes reporting the exact location of the failure as well as the expected items at that location while still allowing developpers to plug in their own error messages.
 
-* User state: Parsing complex languages involves state bookeeping (eg "are we inside a function body?"). This involves allowing a parser to read/write state information. The most simple and composable solution is to write state readers/writers themeseves as parsers that can be inserted in a sequence.
+- User state: Parsing complex languages involves state bookeeping (eg "are we inside a function body?"). This involves allowing a parser to read/write state information. The most simple and composable solution is to write state readers/writers themeseves as parsers that can be inserted in a sequence.
 
-* Refactoring using modular interfaces: abstarcts away error handling & state passing into sparate interfaces (as done in Haskell with stacks of Monad Transformers). This provides a more flexible interface allowing developpers to plug in their own implementations. 
+- Refactoring using modular interfaces: abstarcts away error handling & state passing into sparate interfaces (as done in Haskell with stacks of Monad Transformers). This provides a more flexible interface allowing developpers to plug in their own implementations.
 
-I hope you enjoyed this post and that you'll have some fun creating your own parsers. 
+I hope you enjoyed this post and that you'll have some fun creating your own parsers.

@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title: "Algebraic Effects in JavaScript part 1 - continuations and control transfer"
 date: 2018-11-19 12:53:27 +0100
 categories: algebraic-effects

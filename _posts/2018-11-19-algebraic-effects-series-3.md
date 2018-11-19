@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title: "Algebraic Effects in JavaScript part 3 - Delimited Continuations"
 date: 2018-11-19 12:55:27 +0100
 categories: algebraic-effects

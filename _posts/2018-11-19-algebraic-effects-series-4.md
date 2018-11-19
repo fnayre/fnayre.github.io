@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title: "Algebraic Effects in JavaScript part 4 - Implementing Algebraic Effects and Handlers"
 date: 2018-11-19 13:01:27 +0100
 categories: algebraic-effects

@@ -32,6 +32,11 @@
     text-align: justify;
   }
 
+  ul,
+  ol {
+    padding-left: 2rem;
+  }
+
   a:hover {
     text-decoration: underline;
   }

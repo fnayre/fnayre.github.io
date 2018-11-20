@@ -1,45 +1,34 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-
 # Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
 title: Abstract fun
-email: yelouafi@gmail.com
-author: Yassine Elouafi
-description: >- # this means to ignore newlines until "baseurl:"
-  “There is no authority who decides what is a good idea.” 
-  ― Richard Feynman
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://fnayre.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: YassineElouafi2
-github_username: yelouafi
+description: "Collection of posts about fun things, may include some non-sense"
+url: "https://fnayre.github.io"
 
-disqus:
-  shortname: fnayre
+# Google Analytics
+google_analytics: UA—XXXXXXXX-X
+
+# Author
+author:
+  name: Yassine ElOuafi
+  url: http://abstactfun.com
+  email: yelouafi@gmail.com
 
 # Build settings
 markdown: kramdown
-theme: minima
+include:
+  - _pages
+
+# Assets
+sass:
+  sass_dir: _sass
+  style: compressed
+
+# Gems
 plugins:
   - jekyll-feed
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+  - jekyll-paginate
+  - jekyll-seo-tag
+  # - jemoji #Uncomment this to allow emoji in your post
+
+# Permalinks
+permalink: /:year-:month-:day/:title
+paginate: 5

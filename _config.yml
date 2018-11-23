@@ -32,4 +32,6 @@ plugins:
 # Permalinks
 permalink: /:year-:month-:day/:title
 paginate: 5
-# force rebuild
+# re-force rebuild
+disqus: 
+  shortname: fnayre

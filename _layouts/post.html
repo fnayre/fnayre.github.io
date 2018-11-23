@@ -16,9 +16,7 @@ layout: default
 
   {{ content }}
 </div>
-
-{% include disqus-comments.html %}
-
+<div id="disqus-comments">{% include disqus-comments.html %}</div>
 <div class="pagination">
   {% if page.next.url %}
   <a href="{{ page.next.url | prepend: site.baseurl }}" class="left arrow"

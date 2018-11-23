@@ -18,7 +18,7 @@ So I started doing some experiments with TypeScript, and soon I stumbled upon a 
 
 A bit of googling lead me to some ingenious workarounds like [this one](https://github.com/gcanti/fp-ts). Unfortunately, this won't work in my case, the solution requires the values to be wrapped in objects (so we can have a `URI` property that identifies the current interface). `focused` uses static interfaces that work with plain JS types. For example, I don't want to wrap/unwrap accessed values in classes like `Identity<A>`. Ideally, functions should work directly on `A`. In Haskell, you can put values in a `newtype` which gives you the `URI` like feature but without the runtime overhead. I also found some attempts to implement a `newtype`-like thing with abstract types in Flow or intersection types in TypeScript, but this also didn't work so well on my case (I could've also misused something).
 
-My current (unfinished) workaround is to give up the Generic type inference and just applies the type parameters directly on the call site. For example, let's take the definition of `Functor`
+My current (unfinished) workaround is to give up the Generic type inference and just apply the type parameters directly on the call site. For example, let's take the definition of `Functor`
 
 First, here is the Haskell definition
 
@@ -55,7 +55,7 @@ Which in our hypothetical TS would be
 type Lens<S, A> = <F extends Functor>(f: (a: A) => F<A>) => ((s: S) => F<S>);
 ```
 
-With our earlier and more verbose definition we need to add type parameters for `F<A>` and `F<S>`. (omitting the type extends constraint) this gives us
+With our workaround we need to add type parameters for `F<A>` and `F<S>`. (omitting the type extends constraint) this gives us
 
 ```ts
 type Lens<S, A> = <FA, FS>(F: Functor<A, S, FA, FS>, f: Fn<A, FA>, s: S) => FS;
@@ -67,7 +67,7 @@ Let's say we want to write `over` which allows us to update the value inside a L
 over ::(Lens s a) -> (a -> a) -> s -> s
 ```
 
-The function takes a Lens, the function that will update the embedded value `a`, and the whole value `s`. it then returns a new whole value `s` with `a` updated.
+The function takes a Lens, the function that will update the embedded value `a`, and the whole value `s`. It then returns a new whole value `s` with `a` updated.
 
 The implementation of `over` in Haskell calls the provided Lens with a function which updates the `a` using `f`, wraps the updated value in the trivial `Identity` Functor, the Lens does its internal business and transforms `Identity a` to `Identity s`, and finally we unwrap the embedded `s` using `runIdentity`.
 

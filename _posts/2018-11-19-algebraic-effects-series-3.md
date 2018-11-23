@@ -6,6 +6,8 @@ date: 2018-11-19 12:55:27 +0100
 categories: algebraic-effects
 ---
 
+> This post was originally posted as a [Github gist](https://gist.github.com/yelouafi/7261da07c97c5e6322da3894f6ea60e2)
+
 This is the third part of a series about Algebraic Effects and Handlers.
 
 - Part 1 : [continuations and control transfer]({{ site.baseurl }}{% post_url 2018-11-19-algebraic-effects-series-1 %})

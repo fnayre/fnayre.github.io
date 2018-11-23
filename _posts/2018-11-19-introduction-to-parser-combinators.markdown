@@ -6,6 +6,8 @@ date: 2018-11-19 12:04:27 +0100
 categories: parsers
 ---
 
+> This post was originally posted as a [Github gist](https://gist.github.com/yelouafi/556e5159e869952335e01f6b473c4ec1)
+
 In this tutorial we're going to build a set of parser combinators.
 
 ## What is a parser combinator?

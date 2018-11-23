@@ -6,6 +6,8 @@ date: 2018-11-19 12:53:27 +0100
 categories: algebraic-effects
 ---
 
+> This post was originally posted as a [Github gist](https://gist.github.com/yelouafi/57825fdd223e5337ba0cd2b6ed757f53)
+
 This is the first post of a series about Algebraic Effects and Handlers.
 
 There are 2 ways to approach this topic:

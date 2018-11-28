@@ -108,7 +108,7 @@ The definition of Prisms follows the same path. The Haskell definition is
 type Prism s t a b = forall p f.(Choice p, Applicative f) => p a (f b) -> p s (f t)
 ```
 
-It's the same as Isos except we use `Choice` in place of `Profunctor`. `Choice` is also a Profunctor but extends it with additional functions to deal with pairs and records (you can read [the full story here](https://artyom.me/lens-over-tea-5)).
+It's the same as Isos except we use `Choice` in place of `Profunctor`. `Choice` is also a Profunctor but extends it with additional functions to deal with Sum types like Either (you can read [the full story here](https://artyom.me/lens-over-tea-5)).
 
 The concrete representation for Prisms is
 

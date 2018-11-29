@@ -27,16 +27,16 @@ So far, I have type definitions for
 - Lens & Traversal Composition
 - `over` (and by extension `set`)
 
-Next I'll be adding typing for accessor functions `view`, `preview`, ... requires typing Getters.
+Next I'll be adding typing for accessor functions `view`, `preview`, ... this requires typing Getters.
 
 ### Gettings/Getters
 
 For context, `focused` defines four accessor functions.
 
-- `view(optic, state)` is used to access a single focused value. (for now) The value must exist or it'll an Error.
-- `preview(optic, state)` same as `view` but returns `null` is there is no value. If there are many focused values returns the first one.
-- `toList(optic, state)` returns all focused values (which could be `0`)
-- `has(optic, state)` returns a false if there are no value at the focus, returns true otherwise.
+- `view(optic, state)` is used to access a single focused value. (for now) The value must exist or it'll throw an Error.
+- `preview(optic, state)` same as `view` but returns `null` if there is no value. If there are many focused values returns the first one.
+- `toList(optic, state)` returns all focused values (0 or more).
+- `has(optic, state)` returns false if there is no value under the focus, or true otherwise.
 
 In Haskell, all the above functions take a `Getting` as first parameter. The (simplified) definition is
 
@@ -56,7 +56,7 @@ In Haskell, `Const` is defined as a compile-time wrapper
 newtype Const r a = Const { getConst :: r }
 ```
 
-In other words, `Const` holds a value of type `r` but from the perspective of the type system it is both an `r` and an `a`. In TypeScript we could achieve a similar thing by using intersection types. So I'll be using the following definition
+In other words, `Const` holds a value of type `r` but from the perspective of the type system it is both an `r` and an `a`. In TypeScript we could achieve a similar thing by using an intersection type:
 
 ```ts
 type Const<R, A> = R & A;
@@ -77,7 +77,7 @@ interface Getting<R, S, A> {
 }
 ```
 
-I beleive the `... extends Const<R, X>` clauses are not effective with TypeScript defaulting to bivariance on function parameters. But the `$type?: Getting` ensures that we don't actually set or update Getters (which can be created using the `to` function). This requires of course that we add `Getting` to the type of all other optics which is in fact true.
+I beleive the `... extends Const<R, X>` clauses are not effective with TypeScript bivariance on function parameters. But the `$type?: Getting` ensures that we don't actually set or update Getters (which can be created using the `to` function). This requires of course that we add `Getting` to the type of all other optics which is in fact true (they are all Getters).
 
 ```ts
 interface Iso<S, T, A, B> {
@@ -171,7 +171,7 @@ const List = {
 Then I can create a Const Applicative that accumulates all the values into an array
 
 ```ts
-const ConstList = Const<List>
+const ConstList = Const(List);
 ```
 
 And here is the corresponding accessor function (as always we're specifying the type parameters at the call site)
@@ -190,11 +190,11 @@ Using `toList`, for example, on a Traversal will `combine` all the values inside
 
 The other functions `view`, `preview` and `has` all have a similar implementation, we use a special instance of the Monoid to provide a different behavior (cf link below for the full implementation).
 
-> One caveat is that `view` doesn't actually work the same way as in Haskell. Since it can only get one value, if it's used on a Traversal or Prism it'll throw an Error (in Haskell the Monoid intance is automatically chooses by the compiler).
+> One caveat is that `view` doesn't actually work the same way as in Haskell. Since it can only get one value, if it's used on a Traversal or Prism it'll throw an Error (in Haskell the Monoid intance is automatically choosed by the compiler).
 
-> Another last minute caveat is that optional `$type` in Optic interface doesn't seem to play nice with `strictNullChecks` enabled.
+> Another last minute caveat is that optional `$type` in Optic interface doesn't seem to play nice with `strictNullChecks` enabled. But probably fixable.
 
-But for the rest I beleive we have working definitions for most of the public API. Next I'll have to add typings for
+Next typings to add
 
 - The Proxy interface
 - More awkward multiple composition (composing more than 2 optics)

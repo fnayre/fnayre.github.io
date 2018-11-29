@@ -190,7 +190,9 @@ Using `toList`, for example, on a Traversal will `combine` all the values inside
 
 The other functions `view`, `preview` and `has` all have a similar implementation, we use a special instance of the Monoid to provide a different behavior (cf link below for the full implementation).
 
-One caveat is that `view` doesn't actually work the same way as in Haskell. Since it can only get one value, if it's used on a Traversal or Prism it'll throw an Error (in Haskell the Monoid intance is automatically chooses by the compiler).
+> One caveat is that `view` doesn't actually work the same way as in Haskell. Since it can only get one value, if it's used on a Traversal or Prism it'll throw an Error (in Haskell the Monoid intance is automatically chooses by the compiler).
+
+> Another last minute caveat is that optional `$type` in Optic interface doesn't seem to play nice with `strictNullChecks` enabled.
 
 But for the rest I beleive we have working definitions for most of the public API. Next I'll have to add typings for
 

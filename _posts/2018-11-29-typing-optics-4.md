@@ -6,15 +6,6 @@ date: 2018-11-29 21:20:27 +0100
 categories: optics
 ---
 
----
-
-title:
-published: false
-description:
-tags:
-
----
-
 This is the 4th post documenting my tentative to add typings to my [focused lens library](https://github.com/yelouafi/focused).
 
 So far, I have type definitions for

@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Typing Optics (4): Getters and Const"
+title: "Typing Optics (5): Lens Proxies"
 date: 2018-12-02 16:02:27 +0100
 categories: optics
 ---

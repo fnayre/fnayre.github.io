@@ -43,7 +43,7 @@ const comma = text(",");
 const field = regex(/[^\n,]*/);
 ```
 
-We may also call the above definitions _lexical tokens_. If you've consulted some other parser tutorials, you may have encountered the following description of a parsing workflow
+We may also call the above definitions _lexical scanners_. If you've consulted some other parser tutorials, you may have encountered the following description of a parsing workflow
 
 ```
   | Lexical scanner | --> | Parser |
@@ -53,7 +53,7 @@ We first run a lexical scanning phase on the input string, where we transform th
 
 With parser combinators, we can follow a similar process, except that we're using the same abstraction. Since everything is a parser, we're just assembling basic parsers into more complex parsers.
 
-Note that, for each one of above parsers (or lexers if you want), the result of parsing an input string is a string representing the matched slice. For example, `FIELD` will return a substring matching any character except `\n` and `,`.
+Note that, for each one of above parsers (or lexers if you want), the result of parsing an input string is a string representing the matched slice. For example, `field` will return a substring matching any character except `\n` and `,`.
 
 Next, we define records, remember the definition was
 
@@ -103,7 +103,7 @@ function parse(parser, source) {
 }
 ```
 
-```sh
+```js
 parse(csv, "Id,Name\n1,Yahya\n2,Ayman");
 // => [["Id","Name"],["1","Yahya"],["2","Ayman"]]
 ```

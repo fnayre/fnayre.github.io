@@ -232,4 +232,4 @@ Since I intend to keep this a short tutorial, I'll leave it here. And (maybe :))
 
 ## Links
 
-- [A codesanbox demo](https://codesandbox.io/s/jj91jjoy73) featuring a demo of the CSV and many other example parsers
+- A [codesanbox demo](https://codesandbox.io/s/jj91jjoy73) featuring a demo of the CSV and many other example parsers

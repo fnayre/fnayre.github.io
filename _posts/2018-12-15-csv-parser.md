@@ -3,10 +3,10 @@ layout: post
 comments: true
 title: "Write a CSV Parser"
 date: 2018-12-15 12:33:27 +0100
-categories: optics
+categories: parsers
 ---
 
-Some time ago, I wrote a [tutorial about parser combinators]({{ site.baseurl }}{% post_url 2018-11-19-introduction-to-parser-combinators.md %}). The tutorial shows ho we can, with a few primitive parsers (e.g. for text and regular expressions) and combinators, we can gradually compose simple parsers to build more complex parsers.
+Some time ago, I wrote a [tutorial about parser combinators]({{ site.baseurl }}{% post_url 2018-11-19-introduction-to-parser-combinators %}). The tutorial shows ho we can, with a few primitive parsers (e.g. for text and regular expressions) and combinators, we can gradually compose simple parsers to build more complex parsers.
 
 In this post, I'd like to walk the interested reader through an example of using parser combinators. We'll implement a parser for tabular [CSV file format](https://en.wikipedia.org/wiki/Comma-separated_values).
 
@@ -230,3 +230,7 @@ We could enforce this kind of constraints by running a post-parse traversal on t
 An more optimal solution would be detecting those semantic errors as early as possible during parsing. The solution involves usually maintaining some user defined state during parsing and placing appropriate _guards_ at specific parse steps (guards usually test a parse result against some actual user defined state).
 
 Since I intend to keep this a short tutorial, I'll leave it here. And (maybe :)) write another post with a more detailed walk through on how to enforce semantic constraints.
+
+## Links
+
+- [A codesanbox demo](<(https://codesandbox.io/s/jj91jjoy73)>) featuring a demo of the CSV and many other example parsers

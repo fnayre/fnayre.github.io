@@ -6,7 +6,7 @@ date: 2018-12-15 12:33:27 +0100
 categories: parsers
 ---
 
-Some time ago, I wrote a [tutorial about parser combinators]({{ site.baseurl }}{% post_url 2018-11-19-introduction-to-parser-combinators %}). The tutorial shows ho we can, with a few primitive parsers (e.g. for text and regular expressions) and combinators, we can gradually compose simple parsers to build more complex parsers.
+Some time ago, I wrote a [tutorial about parser combinators]({{ site.baseurl }}{% post_url 2018-11-19-introduction-to-parser-combinators %}). The tutorial shows ho we can, with a few primitive parsers (e.g. for text and regular expressions) and combinators, we can gradually compose simple parsers to build more complex parsers. Alongside the post, I also published a JavaScript library called [pcomb](https://github.com/yelouafi/pcomb) to play with the introduced concepts. The library features many parser combinators that can be used to compose complex parsers.
 
 In this post, I'd like to walk the interested reader through an example of using parser combinators. We'll implement a parser for tabular [CSV file format](https://en.wikipedia.org/wiki/Comma-separated_values).
 

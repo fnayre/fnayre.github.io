@@ -16,7 +16,7 @@ Quoting Wikipedia page:
 
 > a comma-separated values (CSV) file is a delimited text file that uses a comma to separate values. A CSV file stores tabular data (numbers and text) in plain text. Each line of the file is a data record. Each record consists of one or more fields, separated by commas.
 
-So for our purpose, assuming w have a string containing the CSV file content
+So for our purpose, assuming we have a string containing the CSV file content
 
 - A CSV is a collection of records separated by line breaks.
 - A record is a collection of fields separated by commas.
@@ -33,7 +33,7 @@ import { text, regex, eof } from "pcomb";
 
 - `text` allows us to match (=parse) a given literal string
 - `regex` allows us to parse a string that matches a given regular expression
-- `eof` ensures that we've reached the `e`nd `o`f `f`ile. i.e. there are no more superfluous charachters on the input string.
+- `eof` ensures that we've reached the **e**nd **o**f **f**ile (there are no more superfluous charachters on the input string).
 
 Next we define our most basic parsers.
 
@@ -47,10 +47,9 @@ We may also call the above definitions _lexical tokens_. If you've consulted som
 
 ```
   | Lexical scanner | --> | Parser |
-
 ```
 
-i.e. we first run a lexical scanning phase on the input string, where we transform the sequence of raw input characters into a sequence of _tokens_ (e.g. numbers, operators, simple variables). Then we feed this token sequence into a parsing phase that assembles them into more complex structures (e.g. arithmetic expressions).
+We first run a lexical scanning phase on the input string, where we transform the sequence of raw input characters into a sequence of _tokens_ (e.g. numbers, operators, simple variables). Then we feed this token sequence into a parsing phase that assembles them into more complex structures (e.g. arithmetic expressions).
 
 With parser combinators, we can follow a similar process, except that we're using the same abstraction. Since everything is a parser, we're just assembling basic parsers into more complex parsers.
 
@@ -58,7 +57,7 @@ Note that, for each one of above parsers (or lexers if you want), the result of 
 
 Next, we define records, remember the definition was
 
-- a collection of fields separated by commas'
+> a collection of fields separated by commas
 
 ```js
 const record = field.sepBy(comma);
@@ -70,7 +69,7 @@ More concretely, the result of parsing an input string with `record` will return
 
 Finally the definition of a parser for the whole CSV input was
 
-- A CSV is a collection of records separated by line breaks
+> A CSV is a collection of records separated by line breaks
 
 Which translates to
 
@@ -78,7 +77,7 @@ Which translates to
 const csv = record.sepBy(lineBreak).skip(eof);
 ```
 
-`record.sepBy(lineBreak)` should be obvious by now. `skip(eof)` ensure that there are no more characters left on the input string (`A.skip(P)` method transforms a parser for a thing `a...some.more.chars...` into a parser of just `a`, i.e. more characters will throw an error).
+`record.sepBy(lineBreak)` should be obvious by now. `skip(eof)` ensure that there are no more characters left on the input string.
 
 The full source code is given below
 
@@ -111,7 +110,7 @@ parse(csv, "Id,Name\n1,Yahya\n2,Ayman");
 
 ## Improving the parser
 
-One caveat with the above parser is made apparent when we try to parse an input like
+One caveat with the above parser appears when we try to parse an input like
 
 ```
 Year,Make,Model,Description,Price
@@ -129,7 +128,7 @@ When parsing the above input we get
 
 Our header (first line) presupposes that each record should contain 5 fields, yet the parsed result for the second line contains 7 fields.
 
-The issue is that the 4th field of the second line contains commas (`,`) embedded within quotes (`""`). It's not exactly that the implementation of our parser was wrong, the real issue is our definition was not accurate enough to account for _quoted fields_, i.e. fields which use quotes to embed characters that would normally be interpreted as tokens (newlines separators) in our defined language.
+The issue is that the 4th field of the second line contains commas (`,`) embedded within quotes (`""`). It's not exactly that the implementation of our parser was wrong, the real issue is our definition was not accurate enough to account for _quoted fields_, i.e. fields which use quotes to embed characters that would normally be interpreted as tokens (newlines or commas) in our defined language.
 
 So to 'fix' our language we must improve our description with a definition for field content
 
@@ -138,7 +137,7 @@ So to 'fix' our language we must improve our description with a definition for f
 - A field is either
   - a quoted string
   - an unquoted string
-- A quoted string is a sequence of characters between quotes (`"..."`). Within the quotes `"` chars must be prefixed by another `"` character (like `" ... "" ... "`).
+- A quoted string is a sequence of characters between quotes (`"..."`). Within the quotes a character `"` must be prefixed by another `"` (like `"abc""xyz"`).
 - An unquoted string is any string not starting with a quote `"`, any character except `\n` and `,` are allowed.
 
 Let's translate this into code, first we need to update our imports
@@ -167,7 +166,7 @@ We also add some post cleanup using the `map` method, `A.map(f)` method allows t
 
 Next we update the definition of `field`, remember the new definition is now
 
-- A field is either a quoted or unquoted string
+> A field is either a quoted or unquoted string
 
 ```js
 const field = oneOf(quoted, unquoted);
@@ -223,13 +222,13 @@ Year,Make,Model,Description,Price
 1996,Jeep,Grand Cherokee,"MUST SELL!, 5000.00,
 ```
 
-The first line, the header, presupposes that each record in the CSV table should contain 5 records. But the last line mistakenly contains a trailing comma `,`. Parsing the above input will succeed, but as a result we may get a table where all records may not contain the same number of columns.
+The first line, the header, presupposes that each record in the CSV table should contain 5 records. But the last line mistakenly contains a trailing comma `,`. Parsing the above input will succeed, but as a result we get a table where all records do not contain the same number of columns.
 
 We could enforce this kind of constraints by running a post-parse traversal on the parse result to ensure that the number of fields is consistent in the resulting table. But this looks like a sub-optimal solution, for example if we're parsing a huge CSV file, and the above kind of error is located in one of the first lines, we don't need to continue parsing the rest of the input, we can stop parsing immediately at the wrong line.
 
-An more optimal solution would be detecting those semantic errors as early as possible during parsing. The solution involves usually maintaining some user defined state during parsing and placing appropriate _guards_ at specific parse steps (guards usually test a parse result against some actual user defined state).
+A more optimal solution would be detecting those semantic errors as early as possible during parsing. The solution involves usually maintaining some user defined state during parsing and placing appropriate _guards_ at specific parse steps (guards usually test a parse result against some actual user defined state).
 
-Since I intend to keep this a short tutorial, I'll leave it here. And (maybe :)) write another post with a more detailed walk through on how to enforce semantic constraints.
+Since I intend to keep this a short tutorial, I'll leave it here. And (maybe :)) I'll write another post with a more detailed walk through on how to enforce semantic constraints.
 
 ## Links
 

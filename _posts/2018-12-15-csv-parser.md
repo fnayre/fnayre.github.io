@@ -222,7 +222,7 @@ Year,Make,Model,Description,Price
 1996,Jeep,Grand Cherokee,"MUST SELL!, 5000.00,
 ```
 
-The first line, the header, presupposes that each record in the CSV table should contain 5 records. But the last line mistakenly contains a trailing comma `,`. Parsing the above input will succeed, but as a result we get a table where all records do not contain the same number of columns.
+The first line, the header, presupposes that each record in the CSV table should contain 5 columns. But the last line mistakenly contains a trailing comma `,`. Parsing the above input will succeed, but as a result we get a table where all records do not contain the same number of columns.
 
 We could enforce this kind of constraints by running a post-parse traversal on the parse result to ensure that the number of fields is consistent in the resulting table. But this looks like a sub-optimal solution, for example if we're parsing a huge CSV file, and the above kind of error is located in one of the first lines, we don't need to continue parsing the rest of the input, we can stop parsing immediately at the wrong line.
 

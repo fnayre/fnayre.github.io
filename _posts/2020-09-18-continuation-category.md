@@ -26,9 +26,9 @@ All morphisms `a -> b` in the dual category become of the form `(a 🡒 void) ->
 
 To ensure that the dual category is fully and faithfully represented, we need also to check that composition is preserved; In our case this is immediate since we reuse the same morphisms of the dual category in our representation.
 
-Now, observe that in a language with control operators (like Schem's `call/cc`), `a 🡒 void` looks quite like the type of a continuation consuming a type `a`: objects in the FP category (seen as value types) could thus be seen in the dual category as continuations!
+Now, observe that in a language with control operators (like Scheme's `call/cc`), `a 🡒 void` looks quite like the type of a continuation consuming a type `a`: objects in the FP category (seen as value types) could thus be seen in the dual category as continuations!
 
-What about the meaning of morphisms ? they look like
+What about the meaning of morphisms ? they look like functions of the type
 
 `(a 🡒 void) 🡒 (b 🡒 void)`
 
@@ -50,7 +50,7 @@ In summary, in the dual category
 
 More concretely, a function `a 🡒 b` in the FP category becomes a continuation transformer `((b 🡒 void) 🡒 (a 🡒 void))` in the dual category. Which is equivalent to the kleisli arrow `a 🡒 Cont void b` (i.e. the CPS version of `a 🡒 b`).
 
-Now you may alerady know that "Continuation is the mother of all monads" which means we can simulate any monad m within the Continuation mona. If you've doubts, you may convince yourself by consulting the following link
+Now you may alerady know that "Continuation is the mother of all monads" which means we can simulate any monad m within the Continuation monad. If you've doubts, you may convince yourself by consulting the following link
 
 - [The essence of functional programming (section 3.3 Monads and CPS)](bit.ly/2RAB2bU)
 - [The Mother of all Monads](bit.ly/3hCgBpm)
@@ -66,7 +66,7 @@ Moreover, observe that any continuation can be embedded in the FP language as an
 
 I get this is a bit handwavy and lacks formality. It's based on my still immature understanding of Category Theory. But if that makes sense, I beat there's a better explanation using some higher order concepts, event better, there's a formal paper somewhere about it.
 
-The idea originally came to me from Logic, [Constructive logic](https://en.wikipedia.org/wiki/Intuitionistic_logic) (where `not(not(a)) == a` doesn't hold) is known to model FP languages like the Simply Typed Lambda Calculus. In contrast, [Classical logic](https://en.wikipedia.org/wiki/Classical_logic) (where !!a = a holds) corresponds to a language with first class continuations (labels & jumps).
+The idea originally came to me from Logic, [Constructive logic](https://en.wikipedia.org/wiki/Intuitionistic_logic) (where `not(not(a)) == a` doesn't hold) is known to model FP languages like the Simply Typed Lambda Calculus. In contrast, [Classical logic](https://en.wikipedia.org/wiki/Classical_logic) (where `not(not(a)) == a` holds) corresponds to a language with first class continuations (labels & jumps).
 
 Computationally, the proposition `not(a)` correponds to the type `a 🡒 void` and `not(not(a)) == a` can be interpreted computationally as the ability to turn a type `a 🡒 (a 🡒 void)` into `a` via some control operator. We can then invoke the continuation `a 🡒 void` to provide a value of type `a` to some location in the program).
 

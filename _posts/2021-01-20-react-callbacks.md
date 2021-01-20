@@ -29,7 +29,7 @@ There is an interesting issue in the React repo called [useCallback() invalidate
 
 Another interesting case concerns initiating a websocket connection only once upon mounting, then executing some socket handler regularly. We don't want to retrigger the connection process every time something changes but the handler should always see the last committed value.
 
-The often proposed workaround is to use a mutable reference to store the function, then schedule an effect to update the values accessed by the function. A more [general workaround](https://github.com/facebook/react/issues/14099#issuecomment-440013892) proposed in the issue is to store the changing function itself:
+The often proposed workaround is to use a mutable reference to store the function, then schedule an effect to update the values accessed by the function. A more [concise workaround](https://github.com/facebook/react/issues/14099#issuecomment-440013892) proposed in the issue is to store the changing function itself:
 
 ```js
 function useEventCallback(fn) {
@@ -72,9 +72,9 @@ The example above reveals another decision factor, it's not just about doing ren
 
 Let's recap
 
-- The case for render callbacks is unambiguous, `useCallback` is necessary because it gives us the minimum amount of invalidation required. We must rerender and we must access the last rendered values.
+- The case of render callbacks is unambiguous, `useCallback` is necessary because it gives us the minimum amount of invalidation required. We must rerender and we must access the last rendered values.
 
-- The case for side effects is more subtle
+- The case of side effects is more subtle
 
   - In some cases invalidation is desirable because we want to schedule the effect execution as soon as possible.
 
@@ -104,4 +104,4 @@ Finally let's answer a previous question: Is it the same event handler or not if
 
 As I said, it depends on what kind of value you think the event handler is. If you think of it as a regular data value, like rendered JSX, then the answer is no. If you think of the handler as a special kind of value waiting for an input: a continuation, then the answer is yes.
 
-But what if it's not just the dependencies that changes but the code itself. This would be similar to a stateful event handler, something similar to the generators used in redux-saga. Well, in this case, I think it's better to break things down using a mix of state, input and output code. In other words, we'll be using a state machine where the changing behavior is taken care of by the machine's transition function while event handler code would be essentially to feed the machine with external input. In fact, it may be even better to extend this kind of reasoning to the whole component in this sense JSX is just another output.
+But what if it's not just the dependencies that changes but the code itself. This would be similar to a stateful event handler, something similar to the generators used in redux-saga. Well, in this case, I think it's better to break things down using a mix of state, input and output code. In other words, we'll be using a state machine where the changing behavior is taken care of by the machine's transition function. The event handler code would be essentially to feed the machine with external input. In fact, it may be even better to extend this kind of reasoning to the whole component, in this sense JSX is just another output.

@@ -49,17 +49,16 @@ So it may seem that the general rule is: use `useEventCallback` when doing side 
 
 ```js
 function MyComponent(props) {
-  const [state, setState] = useState(...)
+  const [state, setState] = useState(...);
 
   const logger = useEventCallback(() => {
-    console.log(state)
-  })
+    console.log(state);
+  });
 
-  useEffect(() => {
-    const tid = setTimeout(logger, 1000)
-    return () => clearTimeout(tid)
-  }, [logger])
-
+  useEffect(() => {
+    const tid = setTimeout(logger, 1000);
+    return () => clearTimeout(tid);
+  }, [logger]);
 }
 ```
 
@@ -73,17 +72,20 @@ The example above reveals another decision factor, it's not just about doing ren
 
 Let's recap
 
-- The case for render callbacks is clear, `useCallback` is necessary because it gives us the minimum amount of invalidation required. We must rerender and we must access the last rendered values.
+- The case for render callbacks is unambiguous, `useCallback` is necessary because it gives us the minimum amount of invalidation required. We must rerender and we must access the last rendered values.
 
 - The case for side effects is more subtle
-    - In some cases invalidation is desirable because we want to schedule the effect execution as soon as possible.
-    - In other cases invalidation is superfluous, because we're only interested in executing the same handler code but with the last committed values.
 
-The question is whether there is a generic rule by which we can distinguish between the 2 last cases. This would give us a more refined set of rules to reason about callback usage in React.
+  - In some cases invalidation is desirable because we want to schedule the effect execution as soon as possible.
+
+  - In other cases invalidation is superfluous, because we're only interested in executing the same handler code but with the last committed values.
+
+Is there a generic rule by which we can distinguish between the 2 last cases?
 
 Notice the similarity between render callbacks and the logger example, in both cases, we want React to **output** something into the external world as soon as the internal state of the application has changed.
 
-There is also a similarity between the event DOM callbacks and the websocket example. In both cases, we've told the external world (the user or the network) that we're interested in receiving some kind of **input**. When the input arrives, we'll decide what to do next based on the last committed state of the application (Which is correct since commits are a subset of renders. For optimisation purposes, the right amount of invalidation in this case is precisely the commit cycles triggered by state changes, the rest are just indesirable glitches). 
+There is also a similarity between the event DOM callbacks and the websocket example. In both cases, we've told the external world (the user or the network) that we're interested in receiving some kind of **input**. When the input arrives, we'll decide what to do next based on the last committed state of the application. For optimisation purposes, the right amount of invalidation in this case is precisely the commit cycles triggered by state changes, the rest are just undesirable glitches.
+
 In other words it all depends on the direction of the dataflow:
 
 - With output effects, data flows from React into the external world. We want that output to happen as soon as something changes internally.
@@ -97,8 +99,9 @@ Which answers the 2nd question from the beginning of this post
 - `useCallback` is more suited for callbacks that output something into the external world. In fact `useCallback` is semantically really an alias for `useMemo` since we're treating functions here the same as the values we output from JSX.
 
 This also should explain why `useCallback` seems problematic, the same abstraction is used to handle input and output cases. But the 2 cases have incompatible semantics. It may also be a consequence of the fact that React doesn't have a first class support for inputs. For example, input callbacks like DOM event handlers are treated like regular data that must flow to the external world every time something changes.
-Finally let's answer a previous question: Is it the same event handler or not if the code stays the same but the dependencies?
 
-As I said, it depends on what kind of value you think the event handler is. If you think of a regular data value, like rendered JSX, then the answer is no. If you think of the handler as a special kind of value waiting for an input: a continuation, then it's the answer is yes.
+Finally let's answer a previous question: Is it the same event handler or not if the code stays the same but the dependencies change?
 
-But what if it's not just the dependencies that changes but the code itself. This would be similar to a stateful event handler, something similar to long running handlers used in redux-saga. Well, in this case, i think it's better to break things down using a mix of state, input and output code. In other words, we'll be using a state machine where the changing behavior is taken care of by the machine while event handler code would be essentially to feed the machine with external input. In fact, it may be even better to extend the reasoning to the whole component: a state machine with input, output and an internal state. In this sense, JSX is just another output.
+As I said, it depends on what kind of value you think the event handler is. If you think of it as a regular data value, like rendered JSX, then the answer is no. If you think of the handler as a special kind of value waiting for an input: a continuation, then the answer is yes.
+
+But what if it's not just the dependencies that changes but the code itself. This would be similar to a stateful event handler, something similar to the generators used in redux-saga. Well, in this case, I think it's better to break things down using a mix of state, input and output code. In other words, we'll be using a state machine where the changing behavior is taken care of by the machine's transition function while event handler code would be essentially to feed the machine with external input. In fact, it may be even better to extend this kind of reasoning to the whole component in this sense JSX is just another output.

@@ -8,7 +8,7 @@ categories: algebraic-effects
 
 This is the final part of a series about Algebraic Effects and Handlers.
 
-- Part 1 : [continuations and control transfer](/2018-11-19-algebraic-effects-series-1.md)
+- Part 1 : [continuations and control transfer](/2018-11-19-algebraic-effects-series-1)
 - Part 2 : [Capturing continuations with Generators](/2018-11-19-algebraic-effects-series-2)
 - Part 3 : [Delimited continuations](/2018-11-19-algebraic-effects-series-3)
 - **Part 4 : Implementing Algebraic Effects and handlers**
@@ -23,30 +23,30 @@ Below a simple example of Error handling. Don't pay much attention to the progra
 
 ```js
 function main(n) {
-  return handler(n);
+  return handler(n)
 }
 
 function handler(n) {
   try {
-    unsafeOperation(n);
+    unsafeOperation(n)
   } catch (e) {
-    return 0;
+    return 0
   }
 }
 
 function unsafeOperation(n) {
-  const x = oneMoreIndirection(n);
-  return x * 2;
+  const x = oneMoreIndirection(n)
+  return x * 2
 }
 
 function oneMoreIndirection(n) {
   if (n < 0) {
-    throw "cant be under zero!";
+    throw "cant be under zero!"
   }
-  return n + 1;
+  return n + 1
 }
 
-main(-1);
+main(-1)
 // => 0
 ```
 
@@ -134,32 +134,32 @@ We'll base our implementation on this version from the last post
 
 ```js
 function isGenerator(x) {
-  return x != null && typeof x.next === "function";
+  return x != null && typeof x.next === "function"
 }
 
 function runGenerator(gen, arg) {
-  const { value, done } = gen.next(arg);
+  const { value, done } = gen.next(arg)
 
   if (done) {
-    const _return = gen._return;
+    const _return = gen._return
     if (isGenerator(_return)) {
-      runGenerator(_return, value);
+      runGenerator(_return, value)
     } else if (typeof _return === "function") {
-      _return(value);
+      _return(value)
     }
   } else {
     if (isGenerator(value)) {
-      value._return = gen;
-      runGenerator(value, null);
+      value._return = gen
+      runGenerator(value, null)
     } else if (typeof value === "function") {
-      value(gen);
+      value(gen)
     }
   }
 }
 
 function start(gen, onDone) {
-  gen._return = onDone;
-  runGenerator(gen, null);
+  gen._return = onDone
+  runGenerator(gen, null)
 }
 ```
 
@@ -170,17 +170,17 @@ First, let's add the equivalent of our `try/catch` clause.
 ```js
 function withHandler(handler, gen) {
   function* withHandlerFrame() {
-    const result = yield gen;
+    const result = yield gen
     // eventually handles the return value
     if (handler.return != null) {
-      return yield handler.return(result);
+      return yield handler.return(result)
     }
-    return result;
+    return result
   }
 
-  const withHandlerGen = withHandlerFrame();
-  withHandlerGen._handler = handler;
-  return withHandlerGen;
+  const withHandlerGen = withHandlerFrame()
+  withHandlerGen._handler = handler
+  return withHandlerGen
 }
 ```
 
@@ -198,13 +198,13 @@ const abortHandler = {
     // ...
   },
   *abort(msg) {
-    console.error(msg);
-    return 0;
-  }
-};
+    console.error(msg)
+    return 0
+  },
+}
 
 function* main() {
-  yield withHandler(abortHandler, someFunc());
+  yield withHandler(abortHandler, someFunc())
 }
 ```
 
@@ -216,30 +216,30 @@ Below our first implementation of `perform` (note we don't capture the continuat
 function perform(type, data) {
   return performGen => {
     // finds the closest handler for effect `type`
-    let withHandlerGen = performGen;
+    let withHandlerGen = performGen
     while (
       withHandlerGen._handler == null ||
       !withHandlerGen._handler.hasOwnProperty(type)
     ) {
-      if (withHandlerGen._return == null) break;
-      withHandlerGen = withHandlerGen._return;
+      if (withHandlerGen._return == null) break
+      withHandlerGen = withHandlerGen._return
     }
 
     if (
       withHandlerGen._handler == null ||
       !withHandlerGen._handler.hasOwnProperty(type)
     ) {
-      throw new Error(`Unhandled Effect ${type}!`);
+      throw new Error(`Unhandled Effect ${type}!`)
     }
 
     // found a handler, get the withHandler Generator
-    const handlerFunc = withHandlerGen._handler[type];
-    const handlerGen = handlerFunc(data);
+    const handlerFunc = withHandlerGen._handler[type]
+    const handlerGen = handlerFunc(data)
 
     // will return to the parent of withHandler
-    handlerGen._return = withHandlerGen._return;
-    runGenerator(handlerGen, null);
-  };
+    handlerGen._return = withHandlerGen._return
+    runGenerator(handlerGen, null)
+  }
 }
 ```
 
@@ -258,36 +258,36 @@ Let's see how it works with the earlier error handling example adapted to Genera
 ```js
 const abort = {
   *abort(msg) {
-    console.error(msg);
-    return 0;
-  }
-};
+    console.error(msg)
+    return 0
+  },
+}
 
 function* main(n) {
-  return yield handler(n);
+  return yield handler(n)
 }
 
 function* handler(n) {
-  return yield withHandler(abort, unsafeOperation(n));
+  return yield withHandler(abort, unsafeOperation(n))
 }
 
 function* unsafeOperation(n) {
-  const x = yield oneMoreIndirection(n);
-  return x * 2;
+  const x = yield oneMoreIndirection(n)
+  return x * 2
 }
 
 function* oneMoreIndirection(n) {
   if (n < 0) {
     // throw
-    yield perform("abort", "can't be under zero!");
+    yield perform("abort", "can't be under zero!")
   }
-  return n + 1;
+  return n + 1
 }
 
-start(main(2), console.log);
+start(main(2), console.log)
 // => 6
 
-start(main(-1), console.log);
+start(main(-1), console.log)
 // => can't be under zero!
 // => 0
 ```
@@ -318,27 +318,27 @@ The example uses a `read` effect to get a value from the surrounding environment
 // define the `read` handler
 const constRead = {
   *read(_, resume) {
-    const result = yield resume("Stranger");
-    return result;
-  }
-};
+    const result = yield resume("Stranger")
+    return result
+  },
+}
 
 function* main() {
-  return yield withHandler(constRead, greet());
+  return yield withHandler(constRead, greet())
 }
 
 function* greet() {
-  const name = yield withCivility();
-  return `Hi, ${name}`;
+  const name = yield withCivility()
+  return `Hi, ${name}`
 }
 
 function* withCivility() {
   // throw the `read` effect
-  const name = yield perform("read");
-  return `M. ${name}`;
+  const name = yield perform("read")
+  return `M. ${name}`
 }
 
-start(main(), console.log);
+start(main(), console.log)
 // => Hi, M.Stranger;
 ```
 
@@ -372,36 +372,36 @@ Ok, having seen an example of how `perform` should manipulate the Call Stack. Le
 function perform(type, data) {
   return performGen => {
     // finds the closest handler for effect `type`
-    let withHandlerGen = performGen;
+    let withHandlerGen = performGen
     while (
       withHandlerGen._handler == null ||
       !withHandlerGen._handler.hasOwnProperty(type)
     ) {
-      if (withHandlerGen._return == null) break;
-      withHandlerGen = withHandlerGen._return;
+      if (withHandlerGen._return == null) break
+      withHandlerGen = withHandlerGen._return
     }
 
     if (
       withHandlerGen._handler == null ||
       !withHandlerGen._handler.hasOwnProperty(type)
     ) {
-      throw new Error(`Unhandled Effect ${type}!`);
+      throw new Error(`Unhandled Effect ${type}!`)
     }
 
     // found a handler, get the withHandler Generator
-    const handlerFunc = withHandlerGen._handler[type];
+    const handlerFunc = withHandlerGen._handler[type]
 
     const handlerGen = handlerFunc(data, function resume(value) {
       return currentGen => {
-        withHandlerGen._return = currentGen;
-        runGenerator(performGen, value);
-      };
-    });
+        withHandlerGen._return = currentGen
+        runGenerator(performGen, value)
+      }
+    })
 
     // will return to the parent of withHandler
-    handlerGen._return = withHandlerGen._return;
-    runGenerator(handlerGen, null);
-  };
+    handlerGen._return = withHandlerGen._return
+    runGenerator(handlerGen, null)
+  }
 }
 ```
 
@@ -410,9 +410,9 @@ The key code is
 ```js
 function resume(value) {
   return currentGen => {
-    withHandlerGen._return = currentGen;
-    runGenerator(performGen, value);
-  };
+    withHandlerGen._return = currentGen
+    runGenerator(performGen, value)
+  }
 }
 ```
 
@@ -439,28 +439,28 @@ Our first example will be a `log` handler that prints the logged messages in the
 
 ```js
 function log(msg) {
-  return perform("log", msg);
+  return perform("log", msg)
 }
 
 const reverseLog = {
   *log(msg, resume) {
-    yield resume();
-    console.log(msg);
-  }
-};
+    yield resume()
+    console.log(msg)
+  },
+}
 
 function* main() {
-  return yield withHandler(reverseLog, parent());
+  return yield withHandler(reverseLog, parent())
 }
 
 function* parent() {
-  yield child();
+  yield child()
 }
 
 function* child() {
-  yield log("A");
-  yield log("B");
-  yield log("C");
+  yield log("A")
+  yield log("B")
+  yield log("C")
 }
 ```
 
@@ -521,30 +521,30 @@ This one collects the logs in an array instead of logging them
 ```js
 const collectLogs = {
   return(x) {
-    return [x, ""];
+    return [x, ""]
   },
   *log(msg, resume) {
-    const [x, acc] = yield resume();
-    return [x, `${msg} {acc}`];
-  }
-};
+    const [x, acc] = yield resume()
+    return [x, `${msg} {acc}`]
+  },
+}
 
 function* main() {
-  return yield withHandler(collectLogs, parent());
+  return yield withHandler(collectLogs, parent())
 }
 
 function* parent() {
-  return yield child();
+  return yield child()
 }
 
 function* child() {
-  yield log("A");
-  yield log("B");
-  yield log("C");
-  return 10;
+  yield log("A")
+  yield log("B")
+  yield log("C")
+  return 10
 }
 
-start(main(), console.log);
+start(main(), console.log)
 // => [10, "A B C "]
 ```
 
@@ -569,29 +569,29 @@ Here we compose the two precedent handlers
 ```js
 const reverseLog = {
   *log(msg, resume) {
-    yield resume();
-    console.log(msg);
-    yield log(msg);
-  }
-};
+    yield resume()
+    console.log(msg)
+    yield log(msg)
+  },
+}
 
 const collectLogs = {
   return(x) {
-    return [x, ""];
+    return [x, ""]
   },
   *log(msg, resume) {
-    const [x, acc] = yield resume();
-    return [x, `${msg} ${acc}`];
-  }
-};
+    const [x, acc] = yield resume()
+    return [x, `${msg} ${acc}`]
+  },
+}
 
 function* main() {
-  return yield withHandler(collectLogs, withHandler(reverseLog, parent()));
+  return yield withHandler(collectLogs, withHandler(reverseLog, parent()))
 }
 
 // ... rest unmodified
 
-start(main(), console.log);
+start(main(), console.log)
 // => C
 // => B
 // => A

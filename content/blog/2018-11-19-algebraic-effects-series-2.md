@@ -13,7 +13,7 @@ This is the second part of a series about Algebraic Effects and Handlers.
 - Part 3 : [Delimited continuations](/2018-11-19-algebraic-effects-series-3)
 - Part 4 : [Algebraic Effects and handlers](/2018-11-19-algebraic-effects-series-4)
 
-In the [first post](/2018-11-19-algebraic-effects-series-1.md) we introduced
+In the [first post](/2018-11-19-algebraic-effects-series-1) we introduced
 the notions of continuation and control transfer. We saw how programs written in Continuation
 Passing Style (CPS) are more flexible in terms of control transfer manipulation.
 While, in direct style, control transfer is implicitly managed by the compiler via the call stack, in CPS continuations
@@ -34,11 +34,11 @@ Say we have this simple function
 
 ```js
 function greet(name) {
-  const message = `Hi ${name}`;
-  return message;
+  const message = `Hi ${name}`
+  return message
 }
 
-greet("Stranger");
+greet("Stranger")
 // => "Hi Stranger"
 ```
 
@@ -46,11 +46,11 @@ Running this function is as simple as `const result = greet(someString)`. Now if
 
 ```js
 function* greet(name) {
-  const message = yield `Hi ${name}`;
-  return message;
+  const message = yield `Hi ${name}`
+  return message
 }
 
-greet("Stranger");
+greet("Stranger")
 // => greet { <suspended>, __proto__: Generator, ... }
 ```
 
@@ -59,14 +59,14 @@ code for a function that drives the Generator and returns its result
 
 ```js
 function runGenerator(gen, arg) {
-  const { done, value } = gen.next(arg);
+  const { done, value } = gen.next(arg)
   if (done) {
-    return value;
+    return value
   }
-  return runGenerator(gen, value);
+  return runGenerator(gen, value)
 }
 
-runGenerator(greet("Stranger"));
+runGenerator(greet("Stranger"))
 // => "Hi Stranger"
 ```
 
@@ -75,12 +75,12 @@ For example, this is the Generator version of the factorial function
 
 ```js
 function* factorial(n) {
-  if (n === 0) return 1;
-  const n1 = yield factorial(n - 1);
-  return n * n1;
+  if (n === 0) return 1
+  const n1 = yield factorial(n - 1)
+  return n * n1
 }
 
-runGenerator(factorial(10));
+runGenerator(factorial(10))
 // => NaN
 ```
 
@@ -91,23 +91,23 @@ In our case, interpreting child generators amounts to recursively running them a
 
 ```js
 function isGenerator(x) {
-  return x != null && typeof x.next === "function";
+  return x != null && typeof x.next === "function"
 }
 
 function runGenerator(gen, arg) {
-  const { done, value } = gen.next(arg);
+  const { done, value } = gen.next(arg)
   if (done) {
-    return value;
+    return value
   }
   // interpret calls to child Generators
   if (isGenerator(value)) {
-    const result = runGenerator(value);
-    return runGenerator(gen, result);
+    const result = runGenerator(value)
+    return runGenerator(gen, result)
   }
-  return runGenerator(gen, value);
+  return runGenerator(gen, value)
 }
 
-runGenerator(factorial(10));
+runGenerator(factorial(10))
 // => 3628800
 ```
 
@@ -123,8 +123,8 @@ Let's say we want to implement a `sleep` function that, when yielded in a Genera
 
 ```js
 function* slowDouble(x) {
-  yield sleep(2000);
-  return x * 2;
+  yield sleep(2000)
+  return x * 2
 }
 ```
 
@@ -135,15 +135,15 @@ provided continuation(s)
 
 ```js
 function runGenerator(gen, arg, next) {
-  const { done, value } = gen.next(arg);
+  const { done, value } = gen.next(arg)
   if (done) {
-    next(value);
+    next(value)
   } else if (isGenerator(value)) {
-    runGenerator(value, null, function(result) {
-      runGenerator(gen, result, next);
-    });
+    runGenerator(value, null, function (result) {
+      runGenerator(gen, result, next)
+    })
   } else {
-    runGenerator(gen, value, next);
+    runGenerator(gen, value, next)
   }
 }
 ```
@@ -155,7 +155,7 @@ A simple solution is to represent async calls themselves as CPS functions. Let's
 
 ```js
 function sleep(millis, next) {
-  setTimeout(next, millis);
+  setTimeout(next, millis)
 }
 ```
 
@@ -163,7 +163,7 @@ If we curry it
 
 ```js
 function sleep(millis) {
-  return next => setTimeout(next, millis);
+  return next => setTimeout(next, millis)
 }
 ```
 
@@ -173,24 +173,24 @@ a single callback. We'll call those functions _suspended computations_.
 
 ```js
 function runGenerator(gen, arg, next) {
-  const { done, value } = gen.next(arg);
+  const { done, value } = gen.next(arg)
   if (done) {
-    next(value);
+    next(value)
   } else if (isGenerator(value)) {
     runGenerator(value, null, function continuation(result) {
-      runGenerator(gen, result, next);
-    });
+      runGenerator(gen, result, next)
+    })
   } else if (typeof value === "function") {
     // here we handle suspended computations
     value(function continuation(result) {
-      runGenerator(gen, result, next);
-    });
+      runGenerator(gen, result, next)
+    })
   } else {
-    runGenerator(gen, value, next);
+    runGenerator(gen, value, next)
   }
 }
 
-runGenerator(slowDouble(10), null, console.log);
+runGenerator(slowDouble(10), null, console.log)
 // tic tac toc
 // 20
 ```
@@ -203,41 +203,41 @@ As a simple illustration, here is an example that simulates debugger's `break`. 
 we save it in a variable and then pause the whole program.
 
 ```js
-let resume;
+let resume
 
 const BREAK = next => {
-  console.log("**PAUSED**");
-  resume = next;
-};
+  console.log("**PAUSED**")
+  resume = next
+}
 
 function* main() {
-  yield breakTest();
-  yield sleep(1000);
-  console.log("end of main");
+  yield breakTest()
+  yield sleep(1000)
+  console.log("end of main")
 }
 
 function* breakTest() {
   for (let i = 1; i < 5; i++) {
-    yield sleep(1000);
-    console.log("message", i);
-    if (i % 2 === 0) yield BREAK;
+    yield sleep(1000)
+    console.log("message", i)
+    if (i % 2 === 0) yield BREAK
   }
 }
 
 // typing this in the console
-runGenerator(main(), null, console.log);
+runGenerator(main(), null, console.log)
 /*
   message 1
   message 2
   **** PROGRAM PAUSED ****
 */
-resume();
+resume()
 /*
   message 3
   message 4
   **** PROGRAM PAUSED ****
 */
-resume();
+resume()
 // end of main
 ```
 
@@ -246,20 +246,20 @@ skip all the parents and abort the whole computation with the given result. For 
 
 ```js
 function* main() {
-  const result = yield parent();
-  return `main result: (${result})`;
+  const result = yield parent()
+  return `main result: (${result})`
 }
 
 function* parent() {
-  const result = yield child();
-  return `parent result: (${result})`;
+  const result = yield child()
+  return `parent result: (${result})`
 }
 
 function* child() {
-  return "child result";
+  return "child result"
 }
 
-runGenerator(main(), null, console.log);
+runGenerator(main(), null, console.log)
 // => main result: (parent result: (child result))
 ```
 
@@ -289,28 +289,28 @@ Ok, I assume, with good faith, that you did the last exercise. Here is ~the~ my 
 
 ```js
 function runGenerator(gen, arg, abort, next) {
-  const { done, value } = gen.next(arg);
+  const { done, value } = gen.next(arg)
   if (done) {
-    next(value);
+    next(value)
   } else if (isGenerator(value)) {
     runGenerator(value, null, abort, function continuation(result) {
-      runGenerator(gen, result, abort, next);
-    });
+      runGenerator(gen, result, abort, next)
+    })
   } else if (typeof value === "function") {
     value(abort, function continuation(result) {
-      runGenerator(gen, result, abort, next);
-    });
+      runGenerator(gen, result, abort, next)
+    })
   } else {
-    runGenerator(gen, value, abort, next);
+    runGenerator(gen, value, abort, next)
   }
 }
 
 // helper function to thread in the top-level continuation
 function start(gen, next) {
-  runGenerator(gen, null, next, next);
+  runGenerator(gen, null, next, next)
 }
 
-start(main(), console.log);
+start(main(), console.log)
 // => child result
 ```
 
@@ -328,10 +328,10 @@ For that, We'll make `start` itself a Generator and capture its continuation.
 
 ```js
 function* start(genFunc) {
-  const result = yield function(abort) {
-    runGenerator(genFunc(abort), null, abort);
-  };
-  return result;
+  const result = yield function (abort) {
+    runGenerator(genFunc(abort), null, abort)
+  }
+  return result
 }
 ```
 
@@ -346,28 +346,28 @@ Our first tentative of refactoring yields the below code
 
 ```js
 function* start(genFunc) {
-  const result = yield function(abort) {
-    runGenerator(genFunc(abort), null, abort);
-  };
-  return result;
+  const result = yield function (abort) {
+    runGenerator(genFunc(abort), null, abort)
+  }
+  return result
 }
 
 function* main(abort) {
-  const result = yield parent(abort);
-  return `main result: (${result})`;
+  const result = yield parent(abort)
+  return `main result: (${result})`
 }
 
 function* parent(abort) {
-  const result = yield child(abort);
-  return `parent result: (${result})`;
+  const result = yield child(abort)
+  return `parent result: (${result})`
 }
 
 function* child(abort) {
-  yield next => abort("child result");
-  throw "This shouldn't happen";
+  yield next => abort("child result")
+  throw "This shouldn't happen"
 }
 
-runGenerator(start(main), null, console.log);
+runGenerator(start(main), null, console.log)
 // => child result
 ```
 
@@ -386,31 +386,31 @@ code that captures the top-level continuation (here in the `start` Generator), t
 
 ```js
 function* start(genFunc) {
-  const result = yield function(abort) {
+  const result = yield function (abort) {
     function exit(value) {
-      return next => abort(value);
+      return next => abort(value)
     }
-    runGenerator(genFunc(exit), null, abort);
-  };
-  return result;
+    runGenerator(genFunc(exit), null, abort)
+  }
+  return result
 }
 
 function* main(exit) {
-  const result = yield parent(exit);
-  return `main result: (${result})`;
+  const result = yield parent(exit)
+  return `main result: (${result})`
 }
 
 function* parent(exit) {
-  const result = yield child(exit);
-  return `parent result: (${result})`;
+  const result = yield child(exit)
+  return `parent result: (${result})`
 }
 
 function* child(exit) {
-  yield exit("child result");
-  throw "This shouldn't happen";
+  yield exit("child result")
+  throw "This shouldn't happen"
 }
 
-runGenerator(start(main), null, console.log);
+runGenerator(start(main), null, console.log)
 // => child result
 ```
 
@@ -420,23 +420,23 @@ abbreviate it to [`callcc`](https://en.wikipedia.org/wiki/Call-with-current-cont
 
 ```js
 function callcc(genFunc) {
-  return function(capturedCont) {
+  return function (capturedCont) {
     // this is our previous exit
     function jumpToCallccPos(value) {
-      return next => capturedCont(value);
+      return next => capturedCont(value)
     }
-    runGenerator(genFunc(jumpToCallccPos), null, capturedCont);
-  };
+    runGenerator(genFunc(jumpToCallccPos), null, capturedCont)
+  }
 }
 
 function* start() {
-  const result = yield callcc(main);
-  return result;
+  const result = yield callcc(main)
+  return result
 }
 
 // rest of the code unmodified
 
-runGenerator(start(), null, console.log);
+runGenerator(start(), null, console.log)
 // => child result
 ```
 
@@ -457,21 +457,21 @@ The previous `exit` example implemented a simplified version of exceptions. Next
 exception handling
 
 ```js
-const handlerStack = [];
+const handlerStack = []
 
 function* trycc(computation, handler) {
-  return yield callcc(function*(k) {
-    handlerStack.push([handler, k]);
-    const result = yield computation;
-    handlerStack.pop();
-    return result;
-  });
+  return yield callcc(function* (k) {
+    handlerStack.push([handler, k])
+    const result = yield computation
+    handlerStack.pop()
+    return result
+  })
 }
 
 function* throwcc(exception) {
-  const [handler, k] = handlerStack.pop();
-  const result = yield handler(exception);
-  yield k(result);
+  const [handler, k] = handlerStack.pop()
+  const result = yield handler(exception)
+  yield k(result)
 }
 ```
 
@@ -488,17 +488,17 @@ pick another coroutine to run. Below is an example
 
 ```js
 function* main() {
-  yield fork(proc("1", 4));
-  yield fork(proc("2", 2));
-  yield dequeue();
-  console.log("end main");
+  yield fork(proc("1", 4))
+  yield fork(proc("2", 2))
+  yield dequeue()
+  console.log("end main")
 }
 
 function* proc(id, n) {
   for (let i = 0; i <= n; i++) {
-    yield sleep(1000);
-    console.log(id, i);
-    yield pause;
+    yield sleep(1000)
+    console.log(id, i)
+    yield pause
   }
 }
 ```
@@ -520,29 +520,29 @@ Assuming we have implemented `fork` and `pause`, the result of running `main()` 
 A possible implementation of coroutines is given below
 
 ```js
-const processQueue = [];
+const processQueue = []
 
 function fork(gen) {
   return next => {
     processQueue.push(
-      (function*() {
-        yield gen;
-        yield dequeue();
+      (function* () {
+        yield gen
+        yield dequeue()
       })()
-    );
-    next();
-  };
+    )
+    next()
+  }
 }
 
-const pause = callcc(function*(k) {
-  processQueue.push(k());
-  yield dequeue();
-});
+const pause = callcc(function* (k) {
+  processQueue.push(k())
+  yield dequeue()
+})
 
 function* dequeue() {
   if (processQueue.length) {
-    const next = processQueue.shift();
-    yield next;
+    const next = processQueue.shift()
+    yield next
   }
 }
 ```

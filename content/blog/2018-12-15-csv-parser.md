@@ -28,7 +28,7 @@ Let's try to translate this into actual code.
 We begin by importing some basic parsers
 
 ```js
-import { text, regex, eof } from "pcomb";
+import { text, regex, eof } from "pcomb"
 ```
 
 - `text` allows us to match (=parse) a given literal string
@@ -38,9 +38,9 @@ import { text, regex, eof } from "pcomb";
 Next we define our most basic parsers.
 
 ```js
-const lineBreak = text("\n");
-const comma = text(",");
-const field = regex(/[^\n,]*/);
+const lineBreak = text("\n")
+const comma = text(",")
+const field = regex(/[^\n,]*/)
 ```
 
 We may also call the above definitions _lexical scanners_. If you've consulted some other parser tutorials, you may have encountered the following description of a parsing workflow
@@ -60,7 +60,7 @@ Next, we define records, remember the definition was
 > a collection of fields separated by commas
 
 ```js
-const record = field.sepBy(comma);
+const record = field.sepBy(comma)
 ```
 
 The definition is rather self-descriptive. The `A.sepBy(SEP)` method transforms a parser for a thing `a` into a parser of a collection of zero or more things `a sep a sep a ...`. `SEP` can be an arbitrary parser (as long as it doesn't _overlap_ with the definition of `A`).
@@ -74,7 +74,7 @@ Finally the definition of a parser for the whole CSV input was
 Which translates to
 
 ```js
-const csv = record.sepBy(lineBreak).skip(eof);
+const csv = record.sepBy(lineBreak).skip(eof)
 ```
 
 `record.sepBy(lineBreak)` should be obvious by now. `skip(eof)` ensure that there are no more characters left on the input string.
@@ -82,13 +82,13 @@ const csv = record.sepBy(lineBreak).skip(eof);
 The full source code is given below
 
 ```js
-import { text, regex, eof } from "pcomb";
+import { text, regex, eof } from "pcomb"
 
-const lineBreak = text("\n");
-const comma = text(",");
-const field = regex(/[^\n,]*/);
-const record = field.sepBy(comma);
-const csv = record.sepBy(lineBreak).skip(eof);
+const lineBreak = text("\n")
+const comma = text(",")
+const field = regex(/[^\n,]*/)
+const record = field.sepBy(comma)
+const csv = record.sepBy(lineBreak).skip(eof)
 ```
 
 To run the parser on an input string we use the `parse` method. It either returns the parse result or raises an error. For example:
@@ -96,15 +96,15 @@ To run the parser on an input string we use the `parse` method. It either return
 ```js
 function parse(parser, source) {
   try {
-    return parser.parse(source);
+    return parser.parse(source)
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
 }
 ```
 
 ```js
-parse(csv, "Id,Name\n1,Yahya\n2,Ayman");
+parse(csv, "Id,Name\n1,Yahya\n2,Ayman")
 // => [["Id","Name"],["1","Yahya"],["2","Ayman"]]
 ```
 
@@ -120,10 +120,10 @@ Year,Make,Model,Description,Price
 When parsing the above input we get
 
 ```js
-[
+;[
   ["Year", "Make", "Model", "Description", "Price"],
-  ["1997", "Ford", "E350", '"ac', " abs", ' moon"', "3000.00"]
-];
+  ["1997", "Ford", "E350", '"ac', " abs", ' moon"', "3000.00"],
+]
 ```
 
 Our header (first line) presupposes that each record should contain 5 fields, yet the parsed result for the second line contains 7 fields.
@@ -143,7 +143,7 @@ So to 'fix' our language we must improve our description with a definition for f
 Let's translate this into code, first we need to update our imports
 
 ```js
-import { text, regex, oneOf, eof } from "pcomb";
+import { text, regex, oneOf, eof } from "pcomb"
 ```
 
 We add an import for the `oneOf` combinator, we'll see the usage later.
@@ -151,13 +151,13 @@ We add an import for the `oneOf` combinator, we'll see the usage later.
 Next we update our 'tokens'
 
 ```js
-const lineBreak = text("\n");
-const comma = text(",");
+const lineBreak = text("\n")
+const comma = text(",")
 // new tokens
-const unquoted = regex(/[^\n,]*/);
+const unquoted = regex(/[^\n,]*/)
 const quoted = regex(/"(?:[^"]|"")*"/).map(s =>
   s.slice(1, s.length - 1).replace(/""/g, '"')
-);
+)
 ```
 
 We introduce 2 new tokens to reflect the new definition. `unquoted` is basically the same as the previous `field`. `quoted` introduces the new feature of embedding reserved tokens within quotes.
@@ -169,7 +169,7 @@ Next we update the definition of `field`, remember the new definition is now
 > A field is either a quoted or unquoted string
 
 ```js
-const field = oneOf(quoted, unquoted);
+const field = oneOf(quoted, unquoted)
 ```
 
 The `oneOf(...ps)` combinator introduces a _choice_ between 2 (or more) parsers. The resulting parser will match any of the given parsers (or fail if none matches).
@@ -177,17 +177,17 @@ The `oneOf(...ps)` combinator introduces a _choice_ between 2 (or more) parsers.
 The rest of the definitions remain unchanged. The whole new implementation becomes
 
 ```js
-import { text, regex, oneOf, eof } from "pcomb";
+import { text, regex, oneOf, eof } from "pcomb"
 
-const lineBerak = text("\n");
-const comma = text(",");
-const unquoted = regex(/[^\n,]*/);
+const lineBerak = text("\n")
+const comma = text(",")
+const unquoted = regex(/[^\n,]*/)
 const quoted = regex(/"(?:[^"]|"")*"/).map(s =>
   s.slice(1, s.length - 1).replace(/""/g, '"')
-);
-const field = oneOf(quoted, unquoted);
-const record = field.sepBy(comma);
-const csv = record.sepBy(lineBerak).skip(eof);
+)
+const field = oneOf(quoted, unquoted)
+const record = field.sepBy(comma)
+const csv = record.sepBy(lineBerak).skip(eof)
 ```
 
 Using on the previous input
@@ -197,9 +197,9 @@ const result = parse(
   csv,
   `Year,Make,Model,Description,Price
 1997,Ford,E350,"ac, abs, moon",3000.00`
-);
+)
 
-console.log(JSON.stringify(result));
+console.log(JSON.stringify(result))
 ```
 
 We get the correct number of fields in the records.

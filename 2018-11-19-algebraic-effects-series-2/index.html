@@ -8,7 +8,7 @@
 <li>Part 3 : <a href="/2018-11-19-algebraic-effects-series-3">Delimited continuations</a></li>
 <li>Part 4 : <a href="/2018-11-19-algebraic-effects-series-4">Algebraic Effects and handlers</a></li>
 </ul>
-<p>In the <a href="/5289959cba499d25c83f79d793f0ac59/2018-11-19-algebraic-effects-series-1.md">first post</a> we introduced
+<p>In the <a href="/2018-11-19-algebraic-effects-series-1">first post</a> we introduced
 the notions of continuation and control transfer. We saw how programs written in Continuation
 Passing Style (CPS) are more flexible in terms of control transfer manipulation.
 While, in direct style, control transfer is implicitly managed by the compiler via the call stack, in CPS continuations
@@ -24,63 +24,63 @@ we can always [try to] emulate them using Generator functions.</p>
 <h3>Driving Generators in direct style</h3>
 <p>Say we have this simple function</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">greet</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> message <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hi </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> message<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> message <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hi </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+  <span class="token keyword">return</span> message
 <span class="token punctuation">}</span>
 
-<span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span>
 <span class="token comment">// => "Hi Stranger"</span></code></pre></div>
 <p>Running this function is as simple as <code class="language-text">const result = greet(someString)</code>. Now if we take the Generator version</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">greet</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> message <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hi </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> message<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> message <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Hi </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+  <span class="token keyword">return</span> message
 <span class="token punctuation">}</span>
 
-<span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span>
 <span class="token comment">// => greet { &lt;suspended>, __proto__: Generator, ... }</span></code></pre></div>
 <p>We get only the Generator object. In order to get the result we need to step the Generator until it’s done. Below is the
 code for a function that drives the Generator and returns its result</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> arg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> value
   <span class="token punctuation">}</span>
-  <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">greet</span><span class="token punctuation">(</span><span class="token string">"Stranger"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token comment">// => "Hi Stranger"</span></code></pre></div>
 <p>Works greet, but just like normal functions can call other normal functions, we’d like also for our Generators to call other Generators.
 For example, this is the Generator version of the factorial function</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">factorial</span><span class="token punctuation">(</span><span class="token parameter">n</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> n1 <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">factorial</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> n <span class="token operator">*</span> n1<span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>n <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span>
+  <span class="token keyword">const</span> n1 <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">factorial</span><span class="token punctuation">(</span>n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> n <span class="token operator">*</span> n1
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">factorial</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">factorial</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token comment">// => NaN</span></code></pre></div>
 <p>Fortunately, Generators allow us to intercept yielded values. This gives us the ability to interpret those values as desired then resume
 the Generator with the result of the interpretation.</p>
 <p>In our case, interpreting child generators amounts to recursively running them and getting their result.</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">isGenerator</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> x <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">typeof</span> x<span class="token punctuation">.</span>next <span class="token operator">===</span> <span class="token string">"function"</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> x <span class="token operator">!=</span> <span class="token keyword">null</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">typeof</span> x<span class="token punctuation">.</span>next <span class="token operator">===</span> <span class="token string">"function"</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> arg</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> value
   <span class="token punctuation">}</span>
   <span class="token comment">// interpret calls to child Generators</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
-  <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">factorial</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">factorial</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span class="token comment">// => 3628800</span></code></pre></div>
 <p>So far, we can call a Generator like a normal function, which includes nested and recursive calls. It seems like we’ve been able to
 emulate the call stack. Note here we’re just reusing the underlying JavaScript call stack.</p>
@@ -89,56 +89,56 @@ but that comes with a price. Our next step is to allow those calls while still p
 <h3>Driving Generators in CPS</h3>
 <p>Let’s say we want to implement a <code class="language-text">sleep</code> function that, when yielded in a Generator, will pause its execution for some time</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">slowDouble</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">2000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> x <span class="token operator">*</span> <span class="token number">2</span><span class="token punctuation">;</span>
+  <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">2000</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> x <span class="token operator">*</span> <span class="token number">2</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>In its current form, <code class="language-text">runGenerator</code> is unable to implement the <code class="language-text">sleep</code> behavior because it runs recursively/synchronously until completion.</p>
 <p>In order to allow async calls, we need to rewrite the function in CPS: remember in this style we don’t return function results, instead we pass them to the
 provided continuation(s)</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> arg<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>But we’re not there yet. So far we can only yield child generators or plain values. We need a way to represent async calls and we need
 to interpret the given representation.</p>
 <p>A simple solution is to represent async calls themselves as CPS functions. Let’s say we write a CPS <code class="language-text">sleep</code> version</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token parameter">millis<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">setTimeout</span><span class="token punctuation">(</span>next<span class="token punctuation">,</span> millis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setTimeout</span><span class="token punctuation">(</span>next<span class="token punctuation">,</span> millis<span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>If we curry it</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token parameter">millis</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>next<span class="token punctuation">,</span> millis<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>next<span class="token punctuation">,</span> millis<span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>The curried version is more suitable to use with <code class="language-text">runGenerator</code>. We can simply plug in a continuation that will
 resume the Generator with the async result. More generally, we’ll represent async calls with functions taking
 a single callback. We’ll call those functions <em>suspended computations</em>.</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> arg<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token function">continuation</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> value <span class="token operator">===</span> <span class="token string">"function"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// here we handle suspended computations</span>
     <span class="token function">value</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token function">continuation</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">slowDouble</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">slowDouble</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// tic tac toc</span>
 <span class="token comment">// 20</span></code></pre></div>
 <p>For readers already familiar with async implementation on top of Generators, this seems just like the old plumbing trick. But observe
@@ -146,59 +146,59 @@ that the callback we provided to the suspended computation represents the contin
 control over what to do next. Put another way, we gain the flexibility of CPS while still writing direct style code.</p>
 <p>As a simple illustration, here is an example that simulates debugger’s <code class="language-text">break</code>. Instead of invoking the continuation,
 we save it in a variable and then pause the whole program.</p>
-<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">let</span> resume<span class="token punctuation">;</span>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">let</span> resume
 
 <span class="token keyword">const</span> <span class="token function-variable function">BREAK</span> <span class="token operator">=</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"**PAUSED**"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  resume <span class="token operator">=</span> next<span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"**PAUSED**"</span><span class="token punctuation">)</span>
+  resume <span class="token operator">=</span> next
+<span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">yield</span> <span class="token function">breakTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"end of main"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">yield</span> <span class="token function">breakTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"end of main"</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">breakTest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">5</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">yield</span> <span class="token constant">BREAK</span><span class="token punctuation">;</span>
+    <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"message"</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">yield</span> <span class="token constant">BREAK</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
 <span class="token comment">// typing this in the console</span>
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">/*
   message 1
   message 2
   **** PROGRAM PAUSED ****
 */</span>
-<span class="token function">resume</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">resume</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token comment">/*
   message 3
   message 4
   **** PROGRAM PAUSED ****
 */</span>
-<span class="token function">resume</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">resume</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token comment">// end of main</span></code></pre></div>
 <p>Another example would be an <code class="language-text">exit(result)</code> function that, when yielded from inside a deeply nested Generator, would
 skip all the parents and abort the whole computation with the given result. For example consider the following code</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">child</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token string">"child result"</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token string">"child result"</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// => main result: (parent result: (child result))</span></code></pre></div>
 <p>Using <code class="language-text">exit</code> we could abort directly from inside <code class="language-text">child</code></p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token operator">...</span> <span class="token punctuation">}</span>
@@ -220,28 +220,28 @@ a good exercise.</p>
 <h3>The road to undelemited continuations</h3>
 <p>Ok, I assume, with good faith, that you did the last exercise. Here is ~the~ my solution</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> arg<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> done<span class="token punctuation">,</span> value <span class="token punctuation">}</span> <span class="token operator">=</span> gen<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>arg<span class="token punctuation">)</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>done<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">next</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">runGenerator</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token function">continuation</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> value <span class="token operator">===</span> <span class="token string">"function"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">value</span><span class="token punctuation">(</span>abort<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token function">continuation</span><span class="token punctuation">(</span><span class="token parameter">result</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> result<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> value<span class="token punctuation">,</span> abort<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
 <span class="token comment">// helper function to thread in the top-level continuation</span>
 <span class="token keyword">function</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token parameter">gen<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> next<span class="token punctuation">,</span> next<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">runGenerator</span><span class="token punctuation">(</span>gen<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> next<span class="token punctuation">,</span> next<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">start</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">start</span><span class="token punctuation">(</span><span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// => child result</span></code></pre></div>
 <p>It works, but it’s not very satisfactory. We said that the promise of CPS is to empower us,
 end users of the API, so we can implement various control operators. But in the above solution, the control is hard
@@ -253,10 +253,10 @@ But we know we can capture a continuation by yielding a suspended computation in
 be capturing the top-level continuation.</p>
 <p>For that, We’ll make <code class="language-text">start</code> itself a Generator and capture its continuation.</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token parameter">genFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result
 <span class="token punctuation">}</span></code></pre></div>
 <p>We’re using <code class="language-text">runGenerator</code> manually, which is a little awkaward, but this leaves our interpreter unmodified. Later we’ll see how
 to abstract away this code.</p>
@@ -265,28 +265,28 @@ keep it visible in the current scope. We can do the same by exploiting the lexic
 as an argument to child Generators.</p>
 <p>Our first tentative of refactoring yields the below code</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token parameter">genFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">parent</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span>abort<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">child</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">yield</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">abort</span><span class="token punctuation">(</span><span class="token string">"child result"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">throw</span> <span class="token string">"This shouldn't happen"</span><span class="token punctuation">;</span>
+  <span class="token keyword">yield</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">abort</span><span class="token punctuation">(</span><span class="token string">"child result"</span><span class="token punctuation">)</span>
+  <span class="token keyword">throw</span> <span class="token string">"This shouldn't happen"</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// => child result</span></code></pre></div>
 <p>By the way, notice how, in <code class="language-text">child</code>, the <code class="language-text">next</code> continuation is ignored in the body of the suspended computation, which
 instead invokes <code class="language-text">abort</code>. It means the next statement <code class="language-text">throw &quot;This shouldn&#39;t happen&quot;</code> won’t be executed and the control will
@@ -298,53 +298,53 @@ Surely this is awkward, we don’t want to end up writing <code class="language-
 creating the suspended computation (<code class="language-text">exit</code>) inside the exiting function, we can create <code class="language-text">exit</code> itself inside the
 code that captures the top-level continuation (here in the <code class="language-text">start</code> Generator), then pass it to child Generators.</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token parameter">genFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">abort</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">function</span> <span class="token function">exit</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">abort</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">abort</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> abort<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token parameter">exit</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">parent</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">main result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">parent</span><span class="token punctuation">(</span><span class="token parameter">exit</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">child</span><span class="token punctuation">(</span>exit<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">parent result: (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>result<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">child</span><span class="token punctuation">(</span><span class="token parameter">exit</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">yield</span> <span class="token function">exit</span><span class="token punctuation">(</span><span class="token string">"child result"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">throw</span> <span class="token string">"This shouldn't happen"</span><span class="token punctuation">;</span>
+  <span class="token keyword">yield</span> <span class="token function">exit</span><span class="token punctuation">(</span><span class="token string">"child result"</span><span class="token punctuation">)</span>
+  <span class="token keyword">throw</span> <span class="token string">"This shouldn't happen"</span>
 <span class="token punctuation">}</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// => child result</span></code></pre></div>
 <p>All we need, in order to complete the refactoring, is to abstract away the code that captures the top-level continuation inside a reusable
 function. But first we need to pick a suitable name for it. <code class="language-text">call_with_current_continuation</code> looks expressive but quite verbose, so let’s
 abbreviate it to <a href="https://en.wikipedia.org/wiki/Call-with-current-continuation"><code class="language-text">callcc</code></a>.</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">callcc</span><span class="token punctuation">(</span><span class="token parameter">genFunc</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">capturedCont</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">capturedCont</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// this is our previous exit</span>
     <span class="token keyword">function</span> <span class="token function">jumpToCallccPos</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">capturedCont</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token function">capturedCont</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
     <span class="token punctuation">}</span>
-    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>jumpToCallccPos<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> capturedCont<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">genFunc</span><span class="token punctuation">(</span>jumpToCallccPos<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> capturedCont<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">callcc</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">callcc</span><span class="token punctuation">(</span>main<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> result
 <span class="token punctuation">}</span>
 
 <span class="token comment">// rest of the code unmodified</span>
 
-<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">runGenerator</span><span class="token punctuation">(</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> console<span class="token punctuation">.</span>log<span class="token punctuation">)</span>
 <span class="token comment">// => child result</span></code></pre></div>
 <p>Note that, unlike what’s found in languages like <code class="language-text">Scheme</code>, our implementation allows only one invocation of the <code class="language-text">callcc</code> continuation.
 We’re here constrained by how Generators work in JavaScript. Each call to <code class="language-text">generator.next()</code> is a one way ticket, so invoking
@@ -359,21 +359,21 @@ negligible space/time cost.</p>
 <h3>Example 1: Emulating try/cacth</h3>
 <p>The previous <code class="language-text">exit</code> example implemented a simplified version of exceptions. Next, we’ll try to make a more elaborated example of structured
 exception handling</p>
-<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> handlerStack <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> handlerStack <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">trycc</span><span class="token punctuation">(</span><span class="token parameter">computation<span class="token punctuation">,</span> handler</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token keyword">yield</span> <span class="token function">callcc</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    handlerStack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span>handler<span class="token punctuation">,</span> k<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> computation<span class="token punctuation">;</span>
-    handlerStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token keyword">yield</span> <span class="token function">callcc</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span> <span class="token punctuation">(</span>k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    handlerStack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span>handler<span class="token punctuation">,</span> k<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> computation
+    handlerStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> result
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">throwcc</span><span class="token punctuation">(</span><span class="token parameter">exception</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> <span class="token punctuation">[</span>handler<span class="token punctuation">,</span> k<span class="token punctuation">]</span> <span class="token operator">=</span> handlerStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">handler</span><span class="token punctuation">(</span>exception<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">yield</span> <span class="token function">k</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>handler<span class="token punctuation">,</span> k<span class="token punctuation">]</span> <span class="token operator">=</span> handlerStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">yield</span> <span class="token function">handler</span><span class="token punctuation">(</span>exception<span class="token punctuation">)</span>
+  <span class="token keyword">yield</span> <span class="token function">k</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p><code class="language-text">trycc/throwcc</code> emulates the <code class="language-text">try/catch/throw</code> statements. <code class="language-text">trycc</code> starts by capturing the current continuation, saves it in a stack along
 with the handler, then run the computation, which may (or may not) throw. If the computation returns successfully then no exception was
@@ -384,17 +384,17 @@ along with the captured continuation, run the handler then use the captured cont
 Once started, a coroutine executes some code then may yield to a central scheduler. The scheduler will save the state of the coroutine then
 pick another coroutine to run. Below is an example</p>
 <div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">yield</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token function">proc</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">yield</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token function">proc</span><span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"end main"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">yield</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token function">proc</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">yield</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token function">proc</span><span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"end main"</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">proc</span><span class="token punctuation">(</span><span class="token parameter">id<span class="token punctuation">,</span> n</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">yield</span> pause<span class="token punctuation">;</span>
+    <span class="token keyword">yield</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+    <span class="token keyword">yield</span> pause
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>Assuming we have implemented <code class="language-text">fork</code> and <code class="language-text">pause</code>, the result of running <code class="language-text">main()</code> gives the following outputs</p>
@@ -408,29 +408,29 @@ pick another coroutine to run. Below is an example</p>
   1 4
   end main</code></pre></div>
 <p>A possible implementation of coroutines is given below</p>
-<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> processQueue <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<div class="gatsby-highlight" data-language="js"><pre class="language-js"><code class="language-js"><span class="token keyword">const</span> processQueue <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
 
 <span class="token keyword">function</span> <span class="token function">fork</span><span class="token punctuation">(</span><span class="token parameter">gen</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">return</span> <span class="token parameter">next</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
     processQueue<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>
-      <span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">yield</span> gen<span class="token punctuation">;</span>
-        <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">yield</span> gen
+        <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">)</span>
+    <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-<span class="token keyword">const</span> pause <span class="token operator">=</span> <span class="token function">callcc</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span><span class="token punctuation">(</span>k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  processQueue<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> pause <span class="token operator">=</span> <span class="token function">callcc</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token operator">*</span> <span class="token punctuation">(</span>k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  processQueue<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">k</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">yield</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
 
 <span class="token keyword">function</span><span class="token operator">*</span> <span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token keyword">if</span> <span class="token punctuation">(</span>processQueue<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> next <span class="token operator">=</span> processQueue<span class="token punctuation">.</span><span class="token function">shift</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">yield</span> next<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> next <span class="token operator">=</span> processQueue<span class="token punctuation">.</span><span class="token function">shift</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">yield</span> next
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span></code></pre></div>
 <p>Here’s how the above code works</p>

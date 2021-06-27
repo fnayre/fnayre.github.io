@@ -1,52 +1,54 @@
-// The Algebraic Theory
-// We're just specifying the operations, no equational laws
-interface Monoid<A> {
-  zero(): A
-  add(left: A, right: A): A
-}
-
-// The free model
-// constructs a tree from operations
-type MTree<A> =
+type Program<A> =
   | { tag: "pure"; value: A }
-  | { tag: "zero" }
-  | { tag: "add"; left: MTree<A>; right: MTree<A> }
+  | {
+      tag: "operation"
+      name: string
+      params: Array<any>
+      resume: (x: any) => Program<A>
+    }
 
-function pure<A>(value: A): MTree<A> {
+function pure<A>(value: A): Program<A> {
   return { tag: "pure", value }
 }
 
-function zero<A>(): MTree<A> {
-  return { tag: "zero" }
+const id = <X>(x: X) => x
+
+function operation<A>(
+  name: string,
+  params: any[] = [],
+  resume: (x: any) => Program<A> = pure
+): Program<A> {
+  return { tag: "operation", name, params, resume: resume }
 }
 
-function add<A>(left: MTree<A>, right: MTree<A>): MTree<A> {
-  return { tag: "add", left, right }
+const random = operation<number>("random")
+
+function log(message: string): Program<undefined> {
+  return operation("log", [message])
 }
 
-const monoidEvalNum = fold({
-  zero: () => 0,
-  add(left: number, right: number): number {
-    return left + right
-  },
-})
-
-function fold<A>(model: Monoid<A>) {
-  return function evaluate(tree: MTree<A>): A {
-    if (tree.tag === "pure") return tree.value
-    if (tree.tag === "zero") return model.zero()
-    else return model.add(evaluate(tree.left), evaluate(tree.right))
+function bind<A, B>(
+  program: Program<A>,
+  then: (a: A) => Program<B>
+): Program<B> {
+  if (program.tag === "pure") return then(program.value)
+  else {
+    let { name, params, resume } = program
+    return operation(name, params, a => bind(resume(a), then))
   }
 }
 
-let expr = add(pure(10), add(pure(100), zero()))
-
-console.log(expr)
-
-console.log("result", monoidEvalNum(expr))
-
-const random = operation("random")
-
-function log(message) {
-  return operation("log", [message])
+function handler(model: any) {
+  return function evaluate<A, B>(program: Program<A>): Program<B> {
+    if (program.tag === "pure")
+      return model.return ? model.return(program.value) : program.value
+    else {
+      let { name, params, resume } = program
+      if (name in model) {
+        return model[name](...params.concat(a => evaluate(resume(a))))
+      } else {
+        return operation(name, params, a => evaluate(resume(a)))
+      }
+    }
+  }
 }

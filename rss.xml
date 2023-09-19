@@ -1,4 +1,355 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Abstract fun]]></title><description><![CDATA[Collection of posts about fun abstract things, may include some non-sense]]></description><link>https://fnayre.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 27 Jun 2021 23:52:43 GMT</lastBuildDate><item><title><![CDATA[Algebraic Effects: from Algebra to Programs]]></title><description><![CDATA[Some time ago I wrote a series about Algebraic effects. I explained then that you could either explain the topic using Math concepts…]]></description><link>https://fnayre.github.io/2021-06-26-algebraic-effects-trees/2021-06-26-algebraic-effects-trees/</link><guid isPermaLink="false">https://fnayre.github.io/2021-06-26-algebraic-effects-trees/2021-06-26-algebraic-effects-trees/</guid><pubDate>Sat, 26 Jun 2021 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;Some time ago I wrote a &lt;a href=&quot;/2018-11-19-algebraic-effects-series-1&quot;&gt;series about Algebraic effects&lt;/a&gt;. I explained then that you could either explain the topic using Math concepts (Denotational) or by showing how it works under some runtime environment like JavaScript (Operational). I choose the second way because I felt it would’ve been more approachable to programmers, and also because I didn’t have myself enough understanding of the Mathematical theory behind them.&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Abstract fun]]></title><description><![CDATA[Collection of posts about fun abstract things, may include some non-sense]]></description><link>https://fnayre.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 19 Sep 2023 01:33:15 GMT</lastBuildDate><item><title><![CDATA[Types as Propositions in Typescript]]></title><description><![CDATA[Propositions as types correspondance (PAT) (or Types as Propositions) is one of the most 
+intriguing discoveries of Computer Science. The…]]></description><link>https://fnayre.github.io/2023-09-04-pat/</link><guid isPermaLink="false">https://fnayre.github.io/2023-09-04-pat/</guid><pubDate>Tue, 05 Sep 2023 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;Propositions as types correspondance (PAT) (or Types as Propositions) is one of the most
+intriguing discoveries of Computer Science. The gist of it is:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In Logic land, you often see stuff like &lt;code class=&quot;language-text&quot;&gt;P is True&lt;/code&gt;. Here, &lt;code class=&quot;language-text&quot;&gt;P&lt;/code&gt; can stand for some
+statement that can be true or false. And a Proof is constructed to back the statement.&lt;/li&gt;
+&lt;li&gt;In code, we’ve got something like: &lt;code class=&quot;language-text&quot;&gt;let x: T = term;&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The correspondance is basically saying Logic and Programming are two sides of the same coin:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In Logic: When you claim something is true, you must provide a Proof for it.&lt;/li&gt;
+&lt;li&gt;In code: If you got a type and want to use it, you create a term of that type.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It’s as if we were writing &lt;code class=&quot;language-text&quot;&gt;let x: P = proof;&lt;/code&gt; in TypeScript. And it’s not just some
+quirky coincidence. If we restrict ourself to a pure subset TypeScript, you’ll see
+you can write logical proofs using code.&lt;/p&gt;
+&lt;h2&gt;Code’s Take on Logic Constructs&lt;/h2&gt;
+&lt;p&gt;First let’s review quickly the key concepts in Logic, they work pretty much like the booleans
+we use in programming:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;True&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;⊤&lt;/code&gt;: This represents a proposition that’s always true. &lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;False&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;⊥&lt;/code&gt;: signifies something that’s never true.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;A ∨ B&lt;/code&gt; : A disjunction. True if either &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; hold true. Could be both.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;A ∧ B&lt;/code&gt; : A conjunction. Both &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; must be true.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; B&lt;/code&gt; : Logical implication. If &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; is true, then &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; is consequently true.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;!A&lt;/code&gt; : negation, a Proposition that’s true if &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; is not.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There’s also &lt;code class=&quot;language-text&quot;&gt;A &amp;lt;=&amp;gt; B&lt;/code&gt;. It’s essentially stating that &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; implies &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; implies &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;.
+In other words, &lt;code class=&quot;language-text&quot;&gt;(A -&amp;gt; B) ∧ (B -&amp;gt; A)&lt;/code&gt;. &lt;/p&gt;
+&lt;p&gt;Now for each one of the above constructs we have an equivalent type in Typescript.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;True&lt;/code&gt; corresponds to any inhabitated type&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;True&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;unknown&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We could use a singleton type like &lt;code class=&quot;language-text&quot;&gt;null&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;undefined&lt;/code&gt;. But with the &lt;code class=&quot;language-text&quot;&gt;unknown&lt;/code&gt; type,
+we can assign any value to it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;False&lt;/code&gt; translates to an uninhabited type in TypeScript. This mirrors the fact that there’s no
+proof for a false proposition in Logic:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;False&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;A ∨ B&lt;/code&gt; corresponds to a discriminated union type in TypeScript. &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; 
+  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tag&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;left&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; 
+  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tag&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;right&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;We’ll also write two constructor functions:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tag&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;left&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; value &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tag&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;right&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; value &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And a helper for case analysis:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;either&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  or&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token function-variable function&quot;&gt;onLeft&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token function-variable function&quot;&gt;onRight&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;b&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    or&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;tag &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;left&quot;&lt;/span&gt; 
+      &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;onLeft&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;or&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; 
+      &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;onRight&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;or&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;A ∧ B&lt;/code&gt; corresponds to a pair of types:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;And&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Logical implications translate to function types:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Finally, The equivalence &lt;code class=&quot;language-text&quot;&gt;A &amp;lt;=&amp;gt; B&lt;/code&gt; corresponds to a pair of 2 functions.
+It’s a sort of 2-way conversion between &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Iff&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So far, everything’s been kinda familiar, right? But with negation, things are getting a bit wild.&lt;/p&gt;
+&lt;h2&gt;Negative types&lt;/h2&gt;
+&lt;p&gt;Let’s start by unpacking the meaning of &lt;code class=&quot;language-text&quot;&gt;False&lt;/code&gt;/&lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt;. The &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt; type acts as a universal subtype,
+as it can be assigned to any other type.&lt;/p&gt;
+&lt;p&gt;You might wonder about the meaning of &lt;code class=&quot;language-text&quot;&gt;any&lt;/code&gt; here. Intriguingly, &lt;code class=&quot;language-text&quot;&gt;any&lt;/code&gt; stands as a proposition
+that is both &lt;code class=&quot;language-text&quot;&gt;True&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;False&lt;/code&gt; at once. This duality allows any value to be assigned to it,
+making it akin to &lt;code class=&quot;language-text&quot;&gt;unknown&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;True&lt;/code&gt;. On the flip side, it can fit into any type (except &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt;),
+reflecting the nature of &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;False&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In logical discourse, a proposition that holds as true and false simultaneously is labeled
+a &lt;em&gt;contradiction&lt;/em&gt;. If one can prove a contradiction,  the whole logic system just falls apart.
+In a parallel sense, being able to produce terms of type &lt;code class=&quot;language-text&quot;&gt;any&lt;/code&gt; compromises the
+soundness of the type system. As highlighted in the TypeScript documentation, the
+flexibility of &lt;code class=&quot;language-text&quot;&gt;any&lt;/code&gt; sacrifices type safety. &lt;/p&gt;
+&lt;p&gt;This brings us to the concept of &lt;strong&gt;Proof by contradiction&lt;/strong&gt;: To disprove a proposition &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;
+(or to assert &lt;code class=&quot;language-text&quot;&gt;!A&lt;/code&gt;), one assumes &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; is true and then demonstrates that this assumption leads
+to a contradiction.. In essence, &lt;code class=&quot;language-text&quot;&gt;!A&lt;/code&gt; equates to &lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; False&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Hence, negating a type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; in TypeScript translates to the function &lt;code class=&quot;language-text&quot;&gt;(x: A) =&amp;gt; never&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Not&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;Double negation, paradoxes and the halting problem&lt;/h2&gt;
+&lt;p&gt;Constructing a term of type &lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; never&lt;/code&gt; poses challenges though. How can we return a &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt; value when,
+by definition, &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt; lacks any values?&lt;/p&gt;
+&lt;p&gt;One way to produce a negative type in Typescript is by writing a non terminating function. For example: &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;forever&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;forever&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// typeof forever = &amp;lt;A&gt;(a: A) =&gt; never&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Typesript detects that the function never terminates and assigns to it a type of &lt;code class=&quot;language-text&quot;&gt;&amp;lt;A&amp;gt;(a: A) =&amp;gt; never&lt;/code&gt;.
+(There are alternative methods to create functions that don’t return,
+but remember we’re operating within a limited TypeScript subset here).&lt;/p&gt;
+&lt;p&gt;Is this type designation genuinely &lt;em&gt;accurate&lt;/em&gt; from a logical standpoint?&lt;/p&gt;
+&lt;p&gt;Consider the following function&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function-variable function&quot;&gt;ff&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function-variable function&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;//&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;wait_forever&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;never&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;wait_forever&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ff&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;wait_forever&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A closer look at the type reveals it corresponds to &lt;code class=&quot;language-text&quot;&gt;Not&amp;lt;Not&amp;lt;A&amp;gt;&amp;gt; =&amp;gt; A&lt;/code&gt;. This is just the &lt;em&gt;double
+negation law&lt;/em&gt; in Logic: &lt;code class=&quot;language-text&quot;&gt;!!A = A&lt;/code&gt;. &lt;/p&gt;
+&lt;p&gt;The implementation exploits the fact that &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt; can be assigned to any type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;. Now we should
+be able to use our double negation in our code to turn values of type &lt;code class=&quot;language-text&quot;&gt;!!A&lt;/code&gt; into values of type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;k &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;However an issue arises:  the statement &lt;code class=&quot;language-text&quot;&gt;let b = a + 2;&lt;/code&gt; is never reached. Upon entering &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt;, the body
+invokes &lt;code class=&quot;language-text&quot;&gt;k(5)&lt;/code&gt; where &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt; represents the non terminating function &lt;code class=&quot;language-text&quot;&gt;wait_forever&lt;/code&gt;. The program remains trapped
+there indefinitely.&lt;/p&gt;
+&lt;p&gt;The core issue with &lt;code class=&quot;language-text&quot;&gt;wait_forever&lt;/code&gt; is its endless recursion. It’s like an infinite loop that keeps
+running without an exit condition. In Logic, infinite loops can give birth to tricky paradoxes,
+like this classic:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This statement is false&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This is the essence of the &lt;em&gt;liar paradox&lt;/em&gt;. If you try to reason through it, you’ll get stuck in
+a endless cycle of contradictions. Give it a try!&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;If we assume that &lt;code class=&quot;language-text&quot;&gt;statement&lt;/code&gt; is true&lt;/strong&gt;, then the statement
+must be false as it claims to be. But then it contradicts our own assumption that
+the statement was true.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;If we assume that &lt;code class=&quot;language-text&quot;&gt;statement&lt;/code&gt; is false&lt;/strong&gt;, then it’s ironically being truthful
+about its falsehood, making it true. Again, this is a contradiction because we
+just assumed it was false.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The self-referencing nature of the statement is the real troublemaker here. It creates a
+loop where the truth value keeps toggling between true and false, never settling, similar
+to how a piece of code is stuck in an infinite loop.&lt;/p&gt;
+&lt;p&gt;This is bad for Logic, which requires every proof to be finite. What this says in reality is
+that &lt;code class=&quot;language-text&quot;&gt;wait_forever&lt;/code&gt; is not exactly the function we’re seeking for our negative types.&lt;/p&gt;
+&lt;p&gt;A more Logic freindly interpretation of negation is actually possible, and would allow writing programs
+in &lt;em&gt;double negation style&lt;/em&gt;. To see how, let’s revisit our earlier example:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;k &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The double negation principle, &lt;code class=&quot;language-text&quot;&gt;!!A = A&lt;/code&gt;, hints that the program should progress beyond the initial line,
+assigning a number type to &lt;code class=&quot;language-text&quot;&gt;a&lt;/code&gt;. Which number? In this context, &lt;code class=&quot;language-text&quot;&gt;5&lt;/code&gt; seems like a logical choice.&lt;/p&gt;
+&lt;p&gt;But then, what’s the role of the &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt; argument, and how do we instantiate it?&lt;/p&gt;
+&lt;p&gt;Here’s the twist: &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt; isn’t a function we can implement by ourselves. &lt;strong&gt;It has to be provided&lt;/strong&gt;
+to us by the programming language.&lt;/p&gt;
+&lt;p&gt;This isn’t just a normal function, It belongs to a special
+class known as &lt;em&gt;continuations&lt;/em&gt;. Think of a continuation as a snapshot of a program’s
+future from a particular moment. For example, consider this code:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// assume f : (n: number) =&gt; number&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, let’s transform it into a continuation-passing style (CPS):&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token function&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// ...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In the CPS style, every function receives an extra &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt; argument, which represents the program’s subsequent steps.&lt;/p&gt;
+&lt;p&gt;Our &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt;, by converting from &lt;code class=&quot;language-text&quot;&gt;Not&amp;lt;Not&amp;lt;A&amp;gt;&amp;gt;&lt;/code&gt; to &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;, essentially transforms a CPS function call into
+a standard value of type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;. It achieves this by encapsulating the program’s future steps and repackaging
+them into a function awaiting a value to proceed.&lt;/p&gt;
+&lt;p&gt;While non-terminating functions and continuations both return &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt;, continuations avoid
+embedding self-referential inconsistencies &lt;strong&gt;within&lt;/strong&gt; our system. By the time the
+function concludes, the program has also concluded.&lt;/p&gt;
+&lt;p&gt;That means to make values of type &lt;code class=&quot;language-text&quot;&gt;Not&amp;lt;A&amp;gt;&lt;/code&gt;, our programming language should equip us with
+something to encapsulate the program’s subsequent steps as a continuation. &lt;/p&gt;
+&lt;p&gt;Although TypeScript doesn’t natively support this construct, for the sake of discussion,
+let’s pretend it does:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;declare&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;f&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Not&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Not&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;While the double negation principle might feel intuitive, I should mention it’s not something
+universally accepted. Some logicians believe that just because a statement isn’t proven doesn’t
+mean the opposite holds true. Think of it as “absence of evidence isn’t evidence of absence.”
+This viewpoint is held by &lt;em&gt;intuitionistic logic&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;In contrast &lt;em&gt;classical Logic&lt;/em&gt; embraces the double negation law. But as we’ve observed,
+to embed this principle in a programming language, we need a control operator to
+turn double negation into identity. This hints at a deep connection between the context
+in which a program runs and the foundational logic underpinning it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If you’ve dabbled with Lisp-like languages (like Scheme or Clojure), you might’ve bumped
+into a cousin of &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt; named &lt;code class=&quot;language-text&quot;&gt;call/cc&lt;/code&gt; (though its type is a bit different).&lt;/p&gt;
+&lt;h2&gt;Diving into Logical Proofs using TypeScript&lt;/h2&gt;
+&lt;p&gt;Having established a bridge between Logic’s concepts and our TypeScript subset,
+We’re ready to weild this knowledge to perform some common proofs in Logic.&lt;/p&gt;
+&lt;p&gt;The most elementary proof is the tautology &lt;code class=&quot;language-text&quot;&gt;A =&amp;gt; A&lt;/code&gt;. This is just the identity function&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; a&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Let’s see some more interesting proofs.&lt;/p&gt;
+&lt;p&gt;We’ll define all our proofs in a generic function, to abstract over propostions &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token generic-function&quot;&gt;&lt;span class=&quot;token function&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;token generic class-name&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;//&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;NotA&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Not&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;NotB&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Not&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// ... subsequent proofs will be populated here&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;Law of Excluded Middle (&lt;code class=&quot;language-text&quot;&gt;A ∨ !A &amp;lt;=&amp;gt; True&lt;/code&gt;)&lt;/h3&gt;
+&lt;p&gt;The law of excluded middle is a foundational principle in classical logic,
+which asserts that any proposition is either true or its negation is true.
+There’s no in-between state.&lt;/p&gt;
+&lt;p&gt;Let’s first write the implementation:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// A ∨ !A&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; excluded_middle&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; NotA&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; 
+  &lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;k &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; 
+    &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; 
+      &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;To construct a value of type &lt;code class=&quot;language-text&quot;&gt;A ∨ !A&lt;/code&gt;, we have 2 choices:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Constructing &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;: Creating an instance of an arbitrary type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; is unfeasible.
+It’s like attempting to materialize something from nothing.&lt;/li&gt;
+&lt;li&gt;On the other hand, creating an instance of &lt;code class=&quot;language-text&quot;&gt;!A&lt;/code&gt; is feasible. To understand
+this, recall that &lt;code class=&quot;language-text&quot;&gt;!A&lt;/code&gt; is synonymous with a continuation of type &lt;code class=&quot;language-text&quot;&gt;(a:A) -&amp;gt; never&lt;/code&gt;.
+So we’ll need the help of &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Here’s the step-by-step breakdown of the implementation:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Invoke &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt; and capture the current continuation as &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Inside the continuation, the next plausible action is to make use
+of &lt;code class=&quot;language-text&quot;&gt;right&lt;/code&gt; to indicate we’re choosing the negation path. This gives: &lt;code class=&quot;language-text&quot;&gt;k(right(a =&amp;gt; _))&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Now, inside our function &lt;code class=&quot;language-text&quot;&gt;(a =&amp;gt; _)&lt;/code&gt;, we need to return a value of type &lt;code class=&quot;language-text&quot;&gt;never&lt;/code&gt;.
+The one tool we have at our disposal to achieve this effect is the captured
+continuation &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt;. Since we now have access to a value of type &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; (through the function argument),
+we can use &lt;code class=&quot;language-text&quot;&gt;k&lt;/code&gt; to redirect our flow to the other branch, i.e., &lt;code class=&quot;language-text&quot;&gt;left(A)&lt;/code&gt;.
+This is expressed as: &lt;code class=&quot;language-text&quot;&gt;k(left(a))&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;This construction can look mind-bending, especially if encountered for
+the first time. It’s somewhat analogous to a closed time-like loop in physics,
+where cause and effect blur.&lt;/p&gt;
+&lt;p&gt;In &lt;a href=&quot;https://homepages.inf.ed.ac.uk/wadler/papers/dual/dual.pdf&quot;&gt;one of his papers&lt;/a&gt;, Philipe Wadler,
+illustrates the above behavior:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The following story illustrates this behavior. (With apologies to Peter Selinger,
+who tells a similar story about a king,
+a wizard, and the Philosopher’s stone.)&lt;/p&gt;
+&lt;p&gt;Once upon a time, the devil approached a man and made
+an offer: “Either (a) I will give you one billion dollars, or (b)
+I will grant you any wish if you pay me one billion dollars.
+Of course, I get to choose whether I offer (a) or (b).&lt;/p&gt;
+&lt;p&gt;The man was wary. Did he need to sign over his soul?
+No, said the devil, all the man need do is accept the offer.&lt;/p&gt;
+&lt;p&gt;The man pondered. If he was offered (b) it was unlikely
+that he would ever be able to buy the wish, but what was
+the harm in having the opportunity available?
+“I accept,” said the man at last. “Do I get (a) or (b)?”
+The devil paused. “I choose (b).”&lt;/p&gt;
+&lt;p&gt;The man was disappointed but not surprised. That was
+that, he thought. But the offer gnawed at him. Imagine
+what he could do with his wish! Many years passed, and
+the man began to accumulate money. To get the money he
+sometimes did bad things, and dimly he realized that this
+must be what the devil had in mind. Eventually he had his
+billion dollars, and the devil appeared again.&lt;/p&gt;
+&lt;p&gt;“Here is a billion dollars,” said the man, handing over a
+valise containing the money. “Grant me my wish!”
+The devil took possession of the valise. Then he said,
+“Oh, did I say (b) before? I’m so sorry. I meant (a). It is
+my great pleasure to give you one billion dollars.”&lt;/p&gt;
+&lt;p&gt;And the devil handed back to the man the same valise
+that the man had just handed to him.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Lastly, an important takeaway is that the &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt; function anchors this logic
+in the domain of classical logic. In intuitionistic logic, which is more conservative
+about claims of truth or falsity, such a construction might not hold true. Here,
+if you cannot furnish a proof for &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;, it doesn’t automatically mean &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; is false.
+It simply means that the truth value of &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; remains undetermined.&lt;/p&gt;
+&lt;h3&gt;&lt;code class=&quot;language-text&quot;&gt;A ∧ !A -&amp;gt; False&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;A proposition and its negation cannot both be true simultaneously.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// A ∧ !A -&gt; False&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; neg_law&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;And&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; NotA&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; False&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; notA&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notA&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In code, this means we can just smash matter and antimatter together and
+watch them annihilate.&lt;/p&gt;
+&lt;h3&gt;Are Functions Essentially Discriminated Unions?&lt;/h3&gt;
+&lt;p&gt;Here’s a thought-provoking equivalence:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; B &amp;lt;=&amp;gt; !A ∨ B&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;It basically says a function &lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; B&lt;/code&gt; is equivalent to an union of a
+continuation expecting &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; and a value &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Let’s see what this means in code.&lt;/p&gt;
+&lt;p&gt;From &lt;code class=&quot;language-text&quot;&gt;(A -&amp;gt; B)&lt;/code&gt; to &lt;code class=&quot;language-text&quot;&gt;(!A ∨ B)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// Transition from (A -&gt; B) to (!A ∨ B)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; fn_union_fwd&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;NotA&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; 
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;f&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;double_neg&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;k &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; 
+      &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; 
+        &lt;span class=&quot;token function&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+          &lt;span class=&quot;token function&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Utilizing the previous time-traveling maneuver, we initially yield a continuation
+to solicit an &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; type. Then we use our &lt;code class=&quot;language-text&quot;&gt;A -&amp;gt; B&lt;/code&gt; function to transform the &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; into a &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; value.
+Subsequently, we reinvoke the continuation to yield the result &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; to the surroundings.&lt;/p&gt;
+&lt;p&gt;Conversely, for the transformation of a union type to a function:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;ts&quot;&gt;&lt;pre class=&quot;language-ts&quot;&gt;&lt;code class=&quot;language-ts&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// Transition from (!A ∨ B) to (A -&gt; B)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; fn_union_bwd&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Or&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;NotA&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Imp&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; 
+  notA_or_B &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; 
+    a &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;either&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        notA_or_B&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;notA&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notA&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;b&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; b&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;To morph a union type to a function, we assume an &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; argument. Then based on the
+content of our container &lt;code class=&quot;language-text&quot;&gt;!A ∨ B&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If it’s a continuation waiting for an &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;, we just present our &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; argument.&lt;/li&gt;
+&lt;li&gt;Conversely, if it’s a &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt; value, we directly return it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This may appear as a form of trickery. One usually expects a genuine mechanism
+to turn an &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; into a &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;. Instead, the transformation feels more like
+routing around the union, merely forwarding existing information rather than
+truly processing it.&lt;/p&gt;
+&lt;p&gt;To be honest, I don’t really have a plausible explanation. I was thinking it might be because
+of classical logic quirks, but the above proof doesn’t use &lt;code class=&quot;language-text&quot;&gt;double_neg&lt;/code&gt; so it’s equally
+valid in intuitionistic logic. &lt;/p&gt;
+&lt;p&gt;I tried to ask my freind GPT-4. Can’t say it adds much but here’s the answer anyway:&lt;/p&gt;
+&lt;p&gt;“Imagine you have a box that might either contain a machine that needs some input &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;
+to work or an already finished product &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;. Now, if someone hands you an &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt;, this function
+simply checks the box. If there’s a machine (&lt;code class=&quot;language-text&quot;&gt;notA&lt;/code&gt;), it feeds the &lt;code class=&quot;language-text&quot;&gt;A&lt;/code&gt; to it.
+If there’s a finished product &lt;code class=&quot;language-text&quot;&gt;B&lt;/code&gt;, it just hands it over. The function doesn’t
+do the “creation” part itself, but instead relies on what’s in the box. This doesn’t
+feel like a trick anymore; it’s more about delegation and routing based on what’s available.”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Wrapping up, I hope you found this dive as intriguing! If your curiosity is still piqued,
+consider tackling these additional equivalences:&lt;/p&gt;
+&lt;p&gt;I’ve put a &lt;a href=&quot;https://www.typescriptlang.org/play?#code/PTAEDMEMBsGcFNQAcBOB7JbYEsAu20A7UQUqIAoXATyUQBUUBXRAXlAcIGtC0B3QgbjJkQoXI0SoMWPAWKASogrVEAMRgJQrQvABu8FIOFgAItlgArdgGN8RUAEFQgCiJQAIUU1QAeRQAeOwBpXAD4NUDJQUAAfUABvUUgAcwAuUAAiaHhwXFT+UG0YJhSHAF8wiOi43ESU1JRsBIALbNz86ELXUGKDMnArG2IMrL8ggApW9rsAShTvP0CtXRQQmPDQFHhcBhRiSuq0wezA8cQusmKhXsJrWTX6pp8XUeOUl2mvXwW9QMfY1fXN7axeLJNJ1RqHPIFE6Cc49Po3eB4Bp6OauQIAYVGqzQKBmvgCwX82MIABlMrgUiNIEVJhoQuiiREiAAlO4U0AjABGL1pzHpRLe6N+fw2W2II1WTJQADoqgkNMxWOlyakyhF1QB+UBEMlZEY46XHWmS9UpFls-Uyo2rSYwoSGUDoogWK79eygQDkRK53Ig7IQACaon6sADaBJcAF1uiIAJIAWyQ0GwlkgbocAFoQm4qB540ggyFWFSaXTXAYRABRACODGwrXgV19oB8fO9OcQMfA4ALoRDeYLgX7LkCdiCUaEIgAcvAEqmbgBCOw+0CTtC4YahEYADxLrc++ntImU2BQsFwoFTuHgCfPuDQyHQ-oYlkQkBXM7nulESjhrpuUGwDJ-QAfS0BJgMva8kFwEZaRWVZLmuWxwBxHQUVHYt7Dgk1-jFCBUMWKlbVWUohAids0HAfD1kWVYRHVAA9DV7QiRC3X9NAGE5DJQJnYYRi7SkU2gaBOUgSwOEpaksNLfdeRCOSil+dVQBAE02JuHhIDwYCUJovRMKmFJ92UlS1lFQEtJ0vS0JQIjBBU2EVNwwEuxGKzcF0gi9GIiJznIpRKNADiuJ4sC6LARjmIiejsEQVd1wS4YgjI0AMnPaTCAYONOT0UIQu4+BeISEYOFLDgRgAVkmYjVnS0BuVALKcry1g3wAalAAAmO0JzAJ0UHWaxgs4wqmo-N04wYM8GokdBtGwf14H9URkQfNAEhQSA4zjbBCHlaBIH2hhEngMglssQ71ggeFbAKsK+Iw8AUiSpLRyCN47HLMAYyWwh8CoNLIB4d1WyXDTbEW-jpKmUyXOISBepEABlNA40QSw0bjWxJEo2BQD20ASQ25NfyQ4hrC3AtYNMtSAo8BKHFYN6ggMen4rXFxQiSx42dUgAqQWheFkXRbF0BfobAHKCJ4H8bFhXFZF4BUvohxnFUOBEBbEIlwiTHCBmxapbwShgMOnhgIARhSTtu1mAlNYQIIR0LUAQ1SmKwHV0AncQTN7BNEY7BxP35NARFcGROyQ5QP3AkWwJIE5WAthW1tk9TlB-UmIkTREDNdacX21DOlSiNLA4iMZUBxwi90vXoJhmzB1YDaNv7pfN4HgK622uz8ANUSb+AXfsN2Pfz73PVAEfQADvX1SpANw6O-0QwABgjPOVIL+ei8b8Qg8gcOQ0geYGBE7fVjrmKlfvh-H6fhWVbo5-FffWc3Qt+X34flWIj1xJMDbUVEo6IHgFuS6DAlorV2v6f0GR64+0XG3IgM1IHQNgcBeBiD4B4lRIzN2Jp7pFTAqVUsJoIgVTBE0KklCzLqgqlXE+kwqGgBqiaWqXsG6gEXPvEuWs0GG3PGBbuPBbYJkHoGAkRDAh+zdiMM+8w1x2AjOHbguA7D2WEH-PR+jH6vzvu-UARhEAAFkcSzkIAAcnxsAngv8DFiwAapMA85g7F1eC3EI-CvTzjcPrdB54lrYxQNY62-duxJQdt8IIY8-SBhZoEHm8SJ5Tz4Z45w3iA5+L4YEpeCVgKx28a2D2jCIgV1bEUkpIwWE1UCOwypnJw41JxC4EYtCYItLYYw6+jCRB5ICQIjxPtXjsKUZogkmjIzh2Du08Okdo7zJQMOJqqiVG4FeDXOu9dRkz28TrPhKCClHhxFpbOwUTzwHJpkhwXocm+JOcImaoSrFHS6rpHg-pJH5jekPcM8TAizEZikzm8TQirBGDUtepSUoqVIcVChrZ2HMPJPQlFFTQA0ItJyBhWKVxrmKbCpR58GrqKaRw3pZlOEqV8mqEQLhxIcAuStf01zbn8OcMM3JniHnUvbiE687zCCfM5N835PgQUbMJVsse-yZFxIhcwIOjMcQJThUHZR5L5LsKWQZSlaqUAaprowkYUyNGqOrpS81nNLVbK5Lndh9LAEvKFWE6xfcJYDwVQWMe0qtFgrlRPN54SPlfP9IEUNnrgLiv9BGN+zik3Jv5q-RN99QDVlrPWRsN0-y2AAGRsEILIJxBijFuPdAHLmRyuXeh4coc5kBLnsqGm6Tx1baQBxGHW8ZQSREQEIMBdgsgI2Sv7IC4FvhQXBGIeXSAXUWl0nYYi8hZVMUVLRXqN8G6sU4vBBKAl6oF2ciIpSiItKKmXrpXzRlzLWVXLbTcHtYyu0hA7VmAVwTB3DpLUQWNEqJZSIDZOoD+ZAVzvVFM4COJgJc13ce5dWL9V2XPesrRMGUBwdNRU21Wj7XaJPjhs1S7WycmI+qbhoBBU-pHf++AVYok+AnXEqdPgZ2PAnuAIddGh3gG+YEbjv7R1xoTbCe0QggA&quot;&gt;TS playground&lt;/a&gt;
+Where you can find other common proofs in Logic.&lt;/p&gt;
+&lt;p&gt;Happy proving!&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Algebraic Effects: from Algebra to Programs]]></title><description><![CDATA[Some time ago I wrote a series about Algebraic effects. I explained then that you could either explain the topic using Math concepts…]]></description><link>https://fnayre.github.io/2021-06-26-algebraic-effects-trees/2021-06-26-algebraic-effects-trees/</link><guid isPermaLink="false">https://fnayre.github.io/2021-06-26-algebraic-effects-trees/2021-06-26-algebraic-effects-trees/</guid><pubDate>Sat, 26 Jun 2021 22:12:03 GMT</pubDate><content:encoded>&lt;p&gt;Some time ago I wrote a &lt;a href=&quot;/2018-11-19-algebraic-effects-series-1&quot;&gt;series about Algebraic effects&lt;/a&gt;. I explained then that you could either explain the topic using Math concepts (Denotational) or by showing how it works under some runtime environment like JavaScript (Operational). I choose the second way because I felt it would’ve been more approachable to programmers, and also because I didn’t have myself enough understanding of the Mathematical theory behind them.&lt;/p&gt;
 &lt;p&gt;I think there is a simple way to put the denotational explanation without brining in the heavy math formalism. IMO this alternative view is better and simpler than the four lengthy posts I wrote back then. It also explains what Algebra has to do with side effects in programming.&lt;/p&gt;
 &lt;h1&gt;Algebras&lt;/h1&gt;
 &lt;p&gt;Let’s start from simple algebraic expressions like &lt;code class=&quot;language-text&quot;&gt;x + 2&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;x + (y * 3)&lt;/code&gt; … We construct such expressions by combining variables and constants using &lt;strong&gt;operations&lt;/strong&gt; like &lt;code class=&quot;language-text&quot;&gt;+&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;*&lt;/code&gt;. We can envision those expressions as trees branching at each operation, with variables and constants at the leaves.&lt;/p&gt;
@@ -46,7 +397,7 @@
   &gt;
     &lt;span
     class=&quot;gatsby-resp-image-background-image&quot;
-    style=&quot;padding-bottom: 91.13924050632912%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAIAAADUsmlHAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA4ElEQVQ4y5WS247DIAxE+f/PzOPuNhFgFxtsqFQqlC2XtH4c+WjwMKaMRkQQsVyN6aWcMzN773POX8D5Od77GGMpBRGZueofwQBQyQoAwIL/B1trK3ke730IYeUskgCwJ6tnCGGY3wtmotttnz2PiY7jUNWLm3uynd3fby5JIjrnd47TLL7ROddHBQBNHMOqmlISkf45qspM1tqcs5nVM6U064aIbNv2Dtftc8NSSp82rJI1oVa4IT8IzDnXyLbUi+/OzxrRcElVETHcQ+//gmPkfZ82jIh+f/6m8KIni8AeWn8sv/364BkAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    style=&quot;padding-bottom: 91.13924050632912%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAIAAADUsmlHAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA4ElEQVQ4y5WS247DIAxE+f/PzOPuNhdsBwM2VCqrCIVL23m0fLA9jMk9iQidlN/JtKWUkvceAFJKX8DpJQAIIeScich7X+ofwYhYyAIg4oQ3NbnveyFrWWudc7PJIhGRWrI86pwjpCHsmR/rOlrPM2/bpqpvbm5JRGTm7v1mTgJAIS//ajvN5Bu7VgHAVezDqhpjFJF2HVVl5uM4Ukp9OL40yoaILMtyh0t3nbAY40cJu8jrpDqqN75jmLW2eFs3tcX75BKjbpOqEtF5unb+PxyCX8cJY+bfn78hPMnJxLAnFrEsmyOngEkAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
   &lt;img
         class=&quot;gatsby-resp-image-image&quot;
@@ -182,7 +533,7 @@
   &gt;
     &lt;span
     class=&quot;gatsby-resp-image-background-image&quot;
-    style=&quot;padding-bottom: 121.7687074829932%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAYCAIAAAB1KUohAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABPUlEQVQ4y+2UT0+DMBiH9/0/gcniEuN2ds5k7maICAhOAqiX4USdgJrxp8Bho29r2m4TMc5s0YOJTzhA2+d9219SGpRDCKFLCCEAwF9AjACAWCCmVksbFQELqlUwxkzkfnVqIYuST4+Tcl6Kbt54bNsOpdTz7jBrA67r+n5AKY1eQ+f6Jo4ispSZcnTYleVTzRj2ewemczUa3VKYNZs7J2fauSK39/e6vb5l2mEYevcPpnmZpGixbSjnuiprqtLptFu7LW/CmhRFbujK4HigabqqKpIkGRfDkodgWWaWF+9nFmQoQVmOEKJfAxgjlH4MrJJnLXayAqAeWO27WmLKqVVcJ1dLPHO2lF84//IfkIMg8H1/S9myLF3XN5YFtX/DZvK3/I4MgNmDAT7dxHWyiCdN4ogxjeJYDP/wtt8Am7J7j9hUdIcAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    style=&quot;padding-bottom: 121.7687074829932%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAYCAIAAAB1KUohAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABQElEQVQ4y+2TTVPCMBCG+///guAJPDuI4hHGaZhWRhqQW/lQQKY6BtPCQdrdZbrhW0Vx9OCMz6lN9tkkbyYWMYhISxARAPgDzAgAmIJ0CmFVay0NYiUt2+my1gBoG8vMDfuDeBabom6nLWWDiHq9bpIK4Pvt4cOIiNTTSN62xmrMK6Bl+p6fFWxhO7WbUvFUNlu+30F4Pc4eVYTrVsVJPlcoXja8ZhAEd/d96dW1DhfbhnjmiCsh7Fw+l81kuoN0kel04jh26aJUrTpC2OVK2b2uxbxxKetRNN04MxPplzCaaB0hfUiSxGGotwIDTsuceWUuAoQ1u4Ft/iDiKlsiemZ2LpJv5j15swsRBcxbmb4iPzL/8h+QR8w3Zc/zXNc9WDbEzJ6CffKn/I6cJJAsOUA28eixUorfpFLbD/GHtj0HJLx7kQJsalEAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
   &lt;img
         class=&quot;gatsby-resp-image-image&quot;
@@ -465,7 +816,7 @@
   &gt;
     &lt;span
     class=&quot;gatsby-resp-image-background-image&quot;
-    style=&quot;padding-bottom: 63.92405063291139%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAIAAAAmMtkJAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA3ElEQVQoz5WS646EIAyFff/H2808wGziDyMXa6WwlMtm7cQ46MSZ7weBYw+UI12ttZQiY0OMv5zSUd8sXX3NMAwp5aMuzn8zxzhNwMyIuDwDAI3inFNKEdFkjSPfic05572nK7z3uOKJYuRH2/M8A0B9g2VZtNaPtrc7aK2ttafJbTkhojGmDUwW08o+kv1XSeEpsKYru7Kv2Jyy756TX2WMaeoAQLq9MMs54zgqpUTRWvd9fxre+SNJKYUQZB5CYOYPzLXWnPjnfv/6vhHRMcILcymFiBAx5/yq5g/Lwf2lkPC4qgAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    style=&quot;padding-bottom: 63.92405063291139%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAIAAAAmMtkJAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA20lEQVQoz42SW27FIAxE2f/y2i6grfKTivAydikmuGqIonuBSD0fCA1jNDYoEam1trUj5x8uZdTlcIuIknvWdS1lH/WzXkRxzs55ZgaA+Iz3vlMQUWtNRM4apG/FzCEAIhIRPjNV4I9AiDnzGTuE4L2XfxBj3LbtjH31YIyx1j62NPYJAMaY+cCstc65sf6q7E5V57AHj462iTGO906e6sp/4b1vabtEatrb10FTtNbLskxnMf8kpZSUUtunlJh5arv9YXvhz4/3l9c3Irp7gtviWisRAsC+73eeX3Ax/WsiOXrLAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
   &lt;img
         class=&quot;gatsby-resp-image-image&quot;

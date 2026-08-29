@@ -1,7 +1,8 @@
 ---
 title: "Agentic Coding and the Design Space You Don't See"
-date: "2026-08-28T00:00:00+01:00"
+date: "2026-08-28"
 description: "Agentic coding makes software production cheaper, but understanding the design space behind a large system remains the bottleneck."
+aiAssisted: true
 ---
 
 One of the interesting things about agentic coding is that it changes where the effort of programming goes.

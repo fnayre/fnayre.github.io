@@ -311,6 +311,13 @@ a:focus {
   font-family: var(--font-heading);
 }
 
+.blog-post .post-disclosure {
+  color: var(--color-text-light);
+  font-size: var(--fontSize-0);
+  font-weight: var(--fontWeight-normal);
+  margin-left: var(--spacing-3);
+}
+
 .blog-post-nav ul {
   margin: var(--spacing-0);
 }

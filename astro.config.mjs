@@ -2,6 +2,7 @@
 import { defineConfig } from "astro/config"
 import sitemap from "@astrojs/sitemap"
 import codeTheme from "./code-theme.mjs"
+import codeBlocks from "./code-blocks.mjs"
 
 export default defineConfig({
   site: "https://fnayre.github.io",
@@ -9,6 +10,6 @@ export default defineConfig({
   trailingSlash: "always",
   integrations: [sitemap()],
   markdown: {
-    shikiConfig: { theme: codeTheme },
+    shikiConfig: { theme: codeTheme, transformers: [codeBlocks] },
   },
 })

@@ -21,7 +21,10 @@ function feedHtml(post: Post, site: URL) {
   const html = post.rendered?.html
   if (!html || !post.filePath) return html
   const dir = new URL(post.filePath, "file:///")
-  return html.replace(/<img __ASTRO_IMAGE_="([^"]*)"\s*\/?>/g, (tag, attr) => {
+  return html
+    // The language label and copy button only make sense on the site.
+    .replace(/<div class="code-block-head">.*?<\/div>/g, "")
+    .replace(/<img __ASTRO_IMAGE_="([^"]*)"\s*\/?>/g, (tag, attr) => {
     const { src, alt } = JSON.parse(attr.replaceAll("&quot;", '"'))
     const image = images[new URL(src, dir).pathname]
     if (!image) return tag

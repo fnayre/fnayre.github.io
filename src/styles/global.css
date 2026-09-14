@@ -8,6 +8,8 @@
   --color-hairline: #d9dce3;
   --color-link: #a3122a;
   --color-type: #1f4e8c;
+  --color-code-bg: #f3f4f7;
+  --color-code-line: #e3e6ec;
 
   --font-serif: "STIX Two Text", "Times New Roman", Times, serif;
   --font-mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo,
@@ -311,14 +313,53 @@ pre {
   color: var(--color-ink);
 }
 
-pre {
+.code-block {
   margin: 1.5rem 0;
-  padding: 0.75rem 0;
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-code-line);
+  border-radius: 4px;
+}
+
+.code-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.2rem 0.5rem 0.2rem 1rem;
+  border-bottom: 1px solid var(--color-code-line);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.code-block-copy {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 3px;
+  padding: 0.1rem 0.5rem;
+  cursor: pointer;
+}
+
+.code-block-copy:hover {
+  color: var(--color-ink);
+  background: var(--color-code-line);
+}
+
+.code-block-copy:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 1px;
+}
+
+pre {
+  margin: 0;
+  padding: 0.85rem 1rem;
   font-size: 0.82em;
   line-height: 1.6;
   overflow-x: auto;
-  border-top: 1px solid var(--color-ink);
-  border-bottom: 1px solid var(--color-ink);
 }
 
 pre.astro-code {

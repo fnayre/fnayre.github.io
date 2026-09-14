@@ -4,7 +4,6 @@ export const SITE = {
   title: "Abstract fun",
   description:
     "Collection of posts about fun abstract things, may include some non-sense",
-  tagline: "fun abstract things, may include some non-sense",
   author: "Yassine EL Ouafi",
   twitter: "YassineElouafi2",
 }
@@ -43,6 +42,7 @@ export function excerpt(post: Post, length = 140): string {
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/<[^>]+>/g, " ")
     .replace(/^#+\s*/gm, "")
+    .replace(/^\s*(?:[-*+]|\d+\.)\s+/gm, "")
     .replace(/[*_`>]/g, "")
     .replace(/\s+/g, " ")
     .trim()

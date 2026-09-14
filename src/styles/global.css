@@ -71,7 +71,6 @@ a:focus-visible {
   border-radius: 1px;
 }
 
-.tagline,
 .byline,
 .running-head,
 .post-meta,
@@ -104,14 +103,8 @@ a:focus-visible {
   text-decoration: none;
 }
 
-.tagline {
-  margin: 0.5rem 0 0;
-  color: var(--color-muted);
-  font-size: 1.125rem;
-}
-
 .byline {
-  margin: 0.25rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--color-ink-soft);
 }
 

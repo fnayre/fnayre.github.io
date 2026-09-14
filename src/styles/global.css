@@ -314,44 +314,71 @@ pre {
 }
 
 .code-block {
+  position: relative;
   margin: 1.5rem 0;
   background: var(--color-code-bg);
   border: 1px solid var(--color-code-line);
   border-radius: 4px;
 }
 
-.code-block-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.2rem 0.5rem 0.2rem 1rem;
-  border-bottom: 1px solid var(--color-code-line);
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.05em;
-  color: var(--color-muted);
-  font-size: 0.9375rem;
-}
-
 .code-block-copy {
-  font: inherit;
-  letter-spacing: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  border-radius: 3px;
-  padding: 0.1rem 0.5rem;
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  color: var(--color-muted);
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-code-line);
+  border-radius: 4px;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
-.code-block-copy:hover {
+.code-block-copy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0.95rem;
+  height: 0.95rem;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='12' height='12' rx='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+.code-block-copy.copied::before {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+.code-block:hover .code-block-copy,
+.code-block-copy:focus-visible,
+.code-block-copy.copied {
+  opacity: 1;
+}
+
+.code-block-copy:hover,
+.code-block-copy.copied {
   color: var(--color-ink);
-  background: var(--color-code-line);
 }
 
 .code-block-copy:focus-visible {
   outline: 2px solid var(--color-link);
   outline-offset: 1px;
+}
+
+@media (hover: none) {
+  .code-block-copy {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-block-copy {
+    transition: none;
+  }
 }
 
 pre {

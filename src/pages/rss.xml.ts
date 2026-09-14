@@ -22,8 +22,8 @@ function feedHtml(post: Post, site: URL) {
   if (!html || !post.filePath) return html
   const dir = new URL(post.filePath, "file:///")
   return html
-    // The language label and copy button only make sense on the site.
-    .replace(/<div class="code-block-head">.*?<\/div>/g, "")
+    // The copy button only makes sense on the site.
+    .replace(/<button[^>]*class="code-block-copy"[^>]*><\/button>/g, "")
     .replace(/<img __ASTRO_IMAGE_="([^"]*)"\s*\/?>/g, (tag, attr) => {
     const { src, alt } = JSON.parse(attr.replaceAll("&quot;", '"'))
     const image = images[new URL(src, dir).pathname]

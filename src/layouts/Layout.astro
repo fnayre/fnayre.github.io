@@ -78,8 +78,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
         button.hidden = false
         button.addEventListener("click", async () => {
           await navigator.clipboard.writeText(code.innerText)
-          button.textContent = "Copied"
-          setTimeout(() => (button.textContent = "Copy"), 1500)
+          button.classList.add("copied")
+          button.setAttribute("aria-label", "Copied")
+          button.title = "Copied"
+          setTimeout(() => {
+            button.classList.remove("copied")
+            button.setAttribute("aria-label", "Copy code")
+            button.title = "Copy code"
+          }, 1500)
         })
       }
     </script>

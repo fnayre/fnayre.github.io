@@ -8,12 +8,12 @@ categories: algebraic-effects
 
 This is the second part of a series about Algebraic Effects and Handlers.
 
-- Part 1 : [continuations and control transfer](/2018-11-19-algebraic-effects-series-1)
+- Part 1 : [continuations and control transfer](/2018-11-19-algebraic-effects-series-1/)
 - **Part 2 : Capturing continuations with Generators**
-- Part 3 : [Delimited continuations](/2018-11-19-algebraic-effects-series-3)
-- Part 4 : [Algebraic Effects and handlers](/2018-11-19-algebraic-effects-series-4)
+- Part 3 : [Delimited continuations](/2018-11-19-algebraic-effects-series-3/)
+- Part 4 : [Algebraic Effects and handlers](/2018-11-19-algebraic-effects-series-4/)
 
-In the [first post](/2018-11-19-algebraic-effects-series-1) we introduced
+In the [first post](/2018-11-19-algebraic-effects-series-1/) we introduced
 the notions of continuation and control transfer. We saw how programs written in Continuation
 Passing Style (CPS) are more flexible in terms of control transfer manipulation.
 While, in direct style, control transfer is implicitly managed by the compiler via the call stack, in CPS continuations

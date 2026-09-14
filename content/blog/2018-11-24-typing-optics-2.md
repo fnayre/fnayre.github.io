@@ -6,7 +6,7 @@ date: 2018-11-24 19:20:27 +0100
 categories: optics
 ---
 
-[Last post](/2018-11-23-typing-optics) I wrote about my first tentatives to add typings to my [focused lens library](https://github.com/yelouafi/focused). I explained the main issue was the lack of Higher Kinded Types in TypeScript which makes it uneasy to port abstractions from functional languages like Haskell.
+[Last post](/2018-11-23-typing-optics/) I wrote about my first tentatives to add typings to my [focused lens library](https://github.com/yelouafi/focused). I explained the main issue was the lack of Higher Kinded Types in TypeScript which makes it uneasy to port abstractions from functional languages like Haskell.
 
 So with a hacky workaround, I ended up implementing basic type classes and Lenses, the main tradeoff being that the solution can only be used internally in the library, since we need to specify all type parameters at the call site. This is to allow the public API to be fully typed.
 

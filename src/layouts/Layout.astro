@@ -1,0 +1,94 @@
+---
+import "@fontsource/stix-two-text/400.css"
+import "@fontsource/stix-two-text/400-italic.css"
+import "@fontsource/stix-two-text/600.css"
+import "@fontsource/stix-two-text/600-italic.css"
+import "@fontsource/stix-two-text/700.css"
+import "@fontsource/spline-sans-mono/400.css"
+import "@fontsource/spline-sans-mono/600.css"
+import "../styles/normalize.css"
+import "../styles/global.css"
+import { SITE } from "../site"
+
+interface Props {
+  title: string
+  description?: string
+  type?: "website" | "article"
+}
+
+const { title, description = SITE.description, type = "website" } = Astro.props
+const fullTitle = `${title} | ${SITE.title}`
+const isRootPath = Astro.url.pathname === "/"
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href="/rss.xml"
+    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content={SITE.twitter} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <div class="global-wrapper">
+      {
+        isRootPath ? (
+          <header class="masthead">
+            <h1>
+              <a href="/">{SITE.title}</a>
+            </h1>
+            <p class="byline">
+              <a href={`https://twitter.com/${SITE.twitter}`}>{SITE.author}</a>
+            </p>
+          </header>
+        ) : (
+          <header class="running-head">
+            <a href="/">{SITE.title}</a>
+          </header>
+        )
+      }
+      <main>
+        <slot />
+      </main>
+    </div>
+    <script>
+      for (const button of document.querySelectorAll<HTMLButtonElement>(
+        ".code-block-copy",
+      )) {
+        const code = button.closest(".code-block")?.querySelector("pre")
+        if (!code || !navigator.clipboard) continue
+        button.hidden = false
+        button.addEventListener("click", async () => {
+          await navigator.clipboard.writeText(code.innerText)
+          button.classList.add("copied")
+          button.setAttribute("aria-label", "Copied")
+          button.title = "Copied"
+          setTimeout(() => {
+            button.classList.remove("copied")
+            button.setAttribute("aria-label", "Copy code")
+            button.title = "Copy code"
+          }, 1500)
+        })
+      }
+    </script>
+  </body>
+</html>

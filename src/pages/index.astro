@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro"
+import { displayTitle, excerpt, formatDate, getPosts, postUrl } from "../site"
+
+const posts = await getPosts()
+---
+
+<Layout title="All posts">
+  <ol class="post-list">
+    {
+      posts.map((post) => (
+        <li>
+          <article
+            class="post-list-item"
+            itemscope
+            itemtype="http://schema.org/Article"
+          >
+            <header>
+              <h2>
+                <a href={postUrl(post)} itemprop="url">
+                  <span itemprop="headline">
+                    {displayTitle(post.data.title)}
+                  </span>
+                </a>
+              </h2>
+              <time datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
+            </header>
+            <p itemprop="description">
+              {post.data.description ?? excerpt(post)}
+            </p>
+          </article>
+        </li>
+      ))
+    }
+  </ol>
+</Layout>

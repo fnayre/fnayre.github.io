@@ -20,9 +20,9 @@ So we'll take the operational road. We'll work out our way through a serie of ex
 Since this is going to be a long topic, we'll split it in 4 parts:
 
 - **First we need to familiarize with the concepts of Continuations and Control Transfer**
-- Next post we'll see [how to use Generators to capture Continuations](/2018-11-19-algebraic-effects-series-2)
-- Then we'll see [how to delimit the extent of continuations](/2018-11-19-algebraic-effects-series-3)
-- Finally we'll see [the mechanics behind Algebraic Effects and Handlers](/2018-11-19-algebraic-effects-series-4})
+- Next post we'll see [how to use Generators to capture Continuations](/2018-11-19-algebraic-effects-series-2/)
+- Then we'll see [how to delimit the extent of continuations](/2018-11-19-algebraic-effects-series-3/)
+- Finally we'll see [the mechanics behind Algebraic Effects and Handlers](/2018-11-19-algebraic-effects-series-4/)
 
 ### Direct Style vs Continuation Passing Style
 

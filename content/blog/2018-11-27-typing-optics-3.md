@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "Typing Optics (3): Isomorphisms and Prisms"
-date: 2018-11-24 19:20:27 +0100
+date: 2018-11-27 19:20:27 +0100
 categories: optics
 ---
 

@@ -1,0 +1,80 @@
+---
+import type { GetStaticPaths } from "astro"
+import { render } from "astro:content"
+import Layout from "../layouts/Layout.astro"
+import Bio from "../components/Bio.astro"
+import {
+  SITE,
+  displayTitle,
+  excerpt,
+  formatDate,
+  getPosts,
+  postUrl,
+  type Post,
+} from "../site"
+
+export const getStaticPaths = (async () => {
+  // Oldest first, so "previous" is the older post like on the Gatsby site.
+  const posts = (await getPosts()).reverse()
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, previous: posts[i - 1], next: posts[i + 1] },
+  }))
+}) satisfies GetStaticPaths
+
+interface Props {
+  post: Post
+  previous?: Post
+  next?: Post
+}
+
+const { post, previous, next } = Astro.props
+const { Content } = await render(post)
+---
+
+<Layout
+  title={displayTitle(post.data.title)}
+  description={post.data.description ?? excerpt(post, 160)}
+  type="article"
+>
+  <article class="blog-post" itemscope itemtype="http://schema.org/Article">
+    <header>
+      <h1 itemprop="headline">{displayTitle(post.data.title)}</h1>
+      <p class="post-meta">
+        <span itemprop="author">{SITE.author}</span>
+        <time datetime={post.data.date.toISOString()}>
+          {formatDate(post.data.date)}
+        </time>
+        {
+          post.data.aiAssisted && (
+            <span class="post-disclosure">Written with AI assistance</span>
+          )
+        }
+      </p>
+    </header>
+    <section itemprop="articleBody">
+      <Content />
+    </section>
+    <footer>
+      <Bio />
+    </footer>
+  </article>
+  <nav class="blog-post-nav" aria-label="More posts">
+    {
+      previous && (
+        <a href={postUrl(previous)} rel="prev">
+          <small>Previous</small>
+          <span>{displayTitle(previous.data.title)}</span>
+        </a>
+      )
+    }
+    {
+      next && (
+        <a href={postUrl(next)} rel="next">
+          <small>Next</small>
+          <span>{displayTitle(next.data.title)}</span>
+        </a>
+      )
+    }
+  </nav>
+</Layout>

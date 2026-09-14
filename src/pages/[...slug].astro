@@ -3,7 +3,14 @@ import type { GetStaticPaths } from "astro"
 import { render } from "astro:content"
 import Layout from "../layouts/Layout.astro"
 import Bio from "../components/Bio.astro"
-import { excerpt, formatDate, getPosts, postUrl, type Post } from "../site"
+import {
+  displayTitle,
+  excerpt,
+  formatDate,
+  getPosts,
+  postUrl,
+  type Post,
+} from "../site"
 
 export const getStaticPaths = (async () => {
   // Oldest first, so "previous" is the older post like on the Gatsby site.
@@ -25,13 +32,13 @@ const { Content } = await render(post)
 ---
 
 <Layout
-  title={post.data.title}
+  title={displayTitle(post.data.title)}
   description={post.data.description ?? excerpt(post, 160)}
   type="article"
 >
   <article class="blog-post" itemscope itemtype="http://schema.org/Article">
     <header>
-      <h1 itemprop="headline">{post.data.title}</h1>
+      <h1 itemprop="headline">{displayTitle(post.data.title)}</h1>
       <p>
         <time datetime={post.data.date.toISOString()}>
           {formatDate(post.data.date)}
@@ -57,7 +64,7 @@ const { Content } = await render(post)
         {
           previous && (
             <a href={postUrl(previous)} rel="prev">
-              ← {previous.data.title}
+              ←&nbsp;{displayTitle(previous.data.title)}
             </a>
           )
         }
@@ -66,7 +73,7 @@ const { Content } = await render(post)
         {
           next && (
             <a href={postUrl(next)} rel="next">
-              {next.data.title} →
+              {displayTitle(next.data.title)}&nbsp;→
             </a>
           )
         }

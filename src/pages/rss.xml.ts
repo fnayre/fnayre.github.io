@@ -1,6 +1,13 @@
 import rss from "@astrojs/rss"
 import type { APIContext, ImageMetadata } from "astro"
-import { SITE, excerpt, getPosts, postUrl, type Post } from "../site"
+import {
+  SITE,
+  displayTitle,
+  excerpt,
+  getPosts,
+  postUrl,
+  type Post,
+} from "../site"
 
 const images = import.meta.glob<ImageMetadata>(
   "/content/blog/**/*.{png,jpg,jpeg,gif,webp,svg}",
@@ -31,7 +38,7 @@ export async function GET(context: APIContext) {
     description: SITE.description,
     site,
     items: posts.map((post) => ({
-      title: post.data.title,
+      title: displayTitle(post.data.title),
       pubDate: post.data.date,
       description: post.data.description ?? excerpt(post),
       link: postUrl(post),

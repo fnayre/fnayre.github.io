@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Bio from "../components/Bio.astro"
-import { excerpt, formatDate, getPosts, postUrl } from "../site"
+import { displayTitle, excerpt, formatDate, getPosts, postUrl } from "../site"
 
 const posts = await getPosts()
 ---
@@ -20,7 +20,7 @@ const posts = await getPosts()
             <header>
               <h2>
                 <a href={postUrl(post)} itemprop="url">
-                  <span itemprop="headline">{post.data.title}</span>
+                  <span itemprop="headline">{displayTitle(post.data.title)}</span>
                 </a>
               </h2>
               <small>{formatDate(post.data.date)}</small>

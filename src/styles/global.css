@@ -106,6 +106,7 @@ h6 {
   margin-bottom: var(--spacing-6);
   line-height: var(--lineHeight-tight);
   letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
 h2,
@@ -165,6 +166,7 @@ p {
   --x-height-multiplier: 0.35;
   margin: var(--spacing-0) var(--spacing-0) var(--spacing-8) var(--spacing-0);
   padding: var(--spacing-0);
+  text-wrap: pretty;
 }
 
 ul,
@@ -231,11 +233,19 @@ table thead tr th {
 
 a {
   color: var(--color-primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
 }
 
-a:hover,
-a:focus {
-  text-decoration: none;
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Custom classes */
@@ -247,7 +257,7 @@ a:focus {
 }
 
 .global-wrapper[data-is-root-path="true"] .bio {
-  margin-bottom: var(--spacing-20);
+  margin-bottom: var(--spacing-12);
 }
 
 .global-header {
@@ -279,6 +289,10 @@ a:focus {
   margin-bottom: var(--spacing-4);
 }
 
+.post-list-item small {
+  color: var(--color-text-light);
+}
+
 .header-link-home {
   font-weight: var(--fontWeight-bold);
   font-family: var(--font-heading);
@@ -306,9 +320,14 @@ a:focus {
   margin: var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0);
 }
 
+.blog-post footer .bio {
+  margin-bottom: var(--spacing-8);
+}
+
 .blog-post header p {
   font-size: var(--fontSize-2);
   font-family: var(--font-heading);
+  color: var(--color-text-light);
 }
 
 .blog-post .post-disclosure {
@@ -322,9 +341,19 @@ a:focus {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  gap: var(--spacing-4) var(--spacing-8);
   list-style: none;
   padding: var(--spacing-0);
   margin: var(--spacing-0);
+}
+
+.blog-post-nav li {
+  flex: 1 1 16rem;
+  margin: var(--spacing-0);
+}
+
+.blog-post-nav li:last-child {
+  text-align: right;
 }
 
 .blog-post img {
@@ -338,14 +367,14 @@ a:focus {
 
 code,
 pre {
-  font-family: Consolas, "Bitstream Vera Sans Mono", "Courier New", Courier,
-    monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, "Cascadia Code", Consolas,
+    "Liberation Mono", monospace;
   tab-size: 4;
 }
 
 pre {
-  font-size: 0.9em;
-  line-height: 1.2em;
+  font-size: 0.85em;
+  line-height: 1.6;
   padding: 1em;
   margin: 0.5em 0 var(--spacing-8);
   overflow: auto;
@@ -358,7 +387,7 @@ pre.astro-code {
 }
 
 :not(pre) > code {
-  font-size: 0.9em;
+  font-size: 0.85em;
   padding: 1px 0.2em;
   background-color: #1b1f230d;
   border-radius: 4px;
@@ -373,6 +402,17 @@ pre.astro-code {
   }
   ul,
   ol {
-    list-style-position: inside;
+    padding-left: var(--spacing-5);
+  }
+  .blog-post header h1 {
+    font-size: var(--fontSize-5);
+  }
+  /* Let code run edge to edge instead of scrolling inside a narrow card. */
+  pre {
+    margin-left: calc(-1 * var(--spacing-5));
+    margin-right: calc(-1 * var(--spacing-5));
+    padding-left: var(--spacing-5);
+    padding-right: var(--spacing-5);
+    border-radius: 0;
   }
 }

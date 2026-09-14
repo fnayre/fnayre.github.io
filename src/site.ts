@@ -18,14 +18,21 @@ export async function getPosts(): Promise<Post[]> {
 
 export const postUrl = (post: Post) => `/${post.id}/`
 
-/** Formats like Gatsby's `formatString: "MMMM DD, YYYY"`. */
+/** e.g. "September 5, 2023". */
 export const formatDate = (date: Date) =>
   date.toLocaleDateString("en-US", {
     timeZone: "UTC",
     year: "numeric",
     month: "long",
-    day: "2-digit",
+    day: "numeric",
   })
+
+/**
+ * Use an en dash for spaced hyphens in titles ("part 1 - continuations"),
+ * glued to the preceding word so it never starts a line.
+ */
+export const displayTitle = (title: string) =>
+  title.replaceAll(" - ", " – ")
 
 /** Plain-text excerpt of a post body, cut at a word boundary. */
 export function excerpt(post: Post, length = 140): string {

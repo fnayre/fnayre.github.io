@@ -47,5 +47,5 @@ export function excerpt(post: Post, length = 140): string {
     .trim()
   if (text.length <= length) return text
   const cut = text.slice(0, length)
-  return cut.slice(0, cut.lastIndexOf(" ")) + "…"
+  return cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s.,;:!?…-]+$/, "") + "…"
 }

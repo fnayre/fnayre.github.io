@@ -4,6 +4,7 @@ export const SITE = {
   title: "Abstract fun",
   description:
     "Collection of posts about fun abstract things, may include some non-sense",
+  tagline: "fun abstract things, may include some non-sense",
   author: "Yassine EL Ouafi",
   twitter: "YassineElouafi2",
 }

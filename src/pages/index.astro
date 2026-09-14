@@ -1,14 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro"
-import Bio from "../components/Bio.astro"
 import { displayTitle, excerpt, formatDate, getPosts, postUrl } from "../site"
 
 const posts = await getPosts()
 ---
 
 <Layout title="All posts">
-  <Bio />
-  <ol style="list-style: none">
+  <ol class="post-list">
     {
       posts.map((post) => (
         <li>
@@ -20,16 +18,18 @@ const posts = await getPosts()
             <header>
               <h2>
                 <a href={postUrl(post)} itemprop="url">
-                  <span itemprop="headline">{displayTitle(post.data.title)}</span>
+                  <span itemprop="headline">
+                    {displayTitle(post.data.title)}
+                  </span>
                 </a>
               </h2>
-              <small>{formatDate(post.data.date)}</small>
+              <time datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
+              </time>
             </header>
-            <section>
-              <p itemprop="description">
-                {post.data.description ?? excerpt(post)}
-              </p>
-            </section>
+            <p itemprop="description">
+              {post.data.description ?? excerpt(post)}
+            </p>
           </article>
         </li>
       ))

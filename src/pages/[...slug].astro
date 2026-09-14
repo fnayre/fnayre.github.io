@@ -4,6 +4,7 @@ import { render } from "astro:content"
 import Layout from "../layouts/Layout.astro"
 import Bio from "../components/Bio.astro"
 import {
+  SITE,
   displayTitle,
   excerpt,
   formatDate,
@@ -39,7 +40,8 @@ const { Content } = await render(post)
   <article class="blog-post" itemscope itemtype="http://schema.org/Article">
     <header>
       <h1 itemprop="headline">{displayTitle(post.data.title)}</h1>
-      <p>
+      <p class="post-meta">
+        <span itemprop="author">{SITE.author}</span>
         <time datetime={post.data.date.toISOString()}>
           {formatDate(post.data.date)}
         </time>
@@ -53,31 +55,26 @@ const { Content } = await render(post)
     <section itemprop="articleBody">
       <Content />
     </section>
-    <hr />
     <footer>
       <Bio />
     </footer>
   </article>
-  <nav class="blog-post-nav">
-    <ul>
-      <li>
-        {
-          previous && (
-            <a href={postUrl(previous)} rel="prev">
-              ←&nbsp;{displayTitle(previous.data.title)}
-            </a>
-          )
-        }
-      </li>
-      <li>
-        {
-          next && (
-            <a href={postUrl(next)} rel="next">
-              {displayTitle(next.data.title)}&nbsp;→
-            </a>
-          )
-        }
-      </li>
-    </ul>
+  <nav class="blog-post-nav" aria-label="More posts">
+    {
+      previous && (
+        <a href={postUrl(previous)} rel="prev">
+          <small>Previous</small>
+          <span>{displayTitle(previous.data.title)}</span>
+        </a>
+      )
+    }
+    {
+      next && (
+        <a href={postUrl(next)} rel="next">
+          <small>Next</small>
+          <span>{displayTitle(next.data.title)}</span>
+        </a>
+      )
+    }
   </nav>
 </Layout>

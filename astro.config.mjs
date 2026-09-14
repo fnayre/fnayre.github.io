@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config"
 import sitemap from "@astrojs/sitemap"
+import codeTheme from "./code-theme.mjs"
 
 export default defineConfig({
   site: "https://fnayre.github.io",
@@ -8,7 +9,6 @@ export default defineConfig({
   trailingSlash: "always",
   integrations: [sitemap()],
   markdown: {
-    // Closest Shiki match to the old Prism "VS" theme.
-    shikiConfig: { theme: "light-plus" },
+    shikiConfig: { theme: codeTheme },
   },
 })

@@ -1,10 +1,11 @@
 ---
-import "@fontsource/montserrat/400.css"
-import "@fontsource/montserrat/700.css"
-import "@fontsource/montserrat/900.css"
-import "@fontsource/merriweather/400.css"
-import "@fontsource/merriweather/400-italic.css"
-import "@fontsource/merriweather/700.css"
+import "@fontsource/stix-two-text/400.css"
+import "@fontsource/stix-two-text/400-italic.css"
+import "@fontsource/stix-two-text/600.css"
+import "@fontsource/stix-two-text/600-italic.css"
+import "@fontsource/stix-two-text/700.css"
+import "@fontsource/spline-sans-mono/400.css"
+import "@fontsource/spline-sans-mono/600.css"
 import "../styles/normalize.css"
 import "../styles/global.css"
 import { SITE } from "../site"
@@ -46,24 +47,27 @@ const canonical = new URL(Astro.url.pathname, Astro.site)
     <meta name="twitter:description" content={description} />
   </head>
   <body>
-    <div class="global-wrapper" data-is-root-path={String(isRootPath)}>
-      <header class="global-header">
-        {
-          isRootPath ? (
-            <h1 class="main-heading">
+    <div class="global-wrapper">
+      {
+        isRootPath ? (
+          <header class="masthead">
+            <h1>
               <a href="/">{SITE.title}</a>
             </h1>
-          ) : (
-            <a class="header-link-home" href="/">
-              {SITE.title}
-            </a>
-          )
-        }
-      </header>
+            <p class="tagline">⊢ {SITE.tagline}</p>
+            <p class="byline">
+              <a href={`https://twitter.com/${SITE.twitter}`}>{SITE.author}</a>
+            </p>
+          </header>
+        ) : (
+          <header class="running-head">
+            <a href="/">{SITE.title}</a>
+          </header>
+        )
+      }
       <main>
         <slot />
       </main>
-      <footer></footer>
     </div>
   </body>
 </html>

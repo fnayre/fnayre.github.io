@@ -6,8 +6,9 @@ import codeBlocks from "./code-blocks.mjs"
 
 export default defineConfig({
   site: "https://fnayre.github.io",
-  // Gatsby served every page at a trailing-slash URL; keep the same shape.
-  trailingSlash: "always",
+  // Pages are built as `/post/index.html` (served at `/post/`, like Gatsby).
+  // "ignore" lets `/post` resolve in dev too; GitHub Pages redirects it.
+  trailingSlash: "ignore",
   integrations: [sitemap()],
   markdown: {
     shikiConfig: { theme: codeTheme, transformers: [codeBlocks] },

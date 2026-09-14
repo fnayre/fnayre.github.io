@@ -4,7 +4,7 @@ date: "2021-06-26T22:12:03.284Z"
 categories: continuations
 ---
 
-Some time ago I wrote a [series about Algebraic effects](/2018-11-19-algebraic-effects-series-1). I explained then that you could either explain the topic using Math concepts (Denotational) or by showing how it works under some runtime environment like JavaScript (Operational). I choose the second way because I felt it would've been more approachable to programmers, and also because I didn't have myself enough understanding of the Mathematical theory behind them.
+Some time ago I wrote a [series about Algebraic effects](/2018-11-19-algebraic-effects-series-1/). I explained then that you could either explain the topic using Math concepts (Denotational) or by showing how it works under some runtime environment like JavaScript (Operational). I choose the second way because I felt it would've been more approachable to programmers, and also because I didn't have myself enough understanding of the Mathematical theory behind them.
 
 I think there is a simple way to put the denotational explanation without brining in the heavy math formalism. IMO this alternative view is better and simpler than the four lengthy posts I wrote back then. It also explains what Algebra has to do with side effects in programming.
 

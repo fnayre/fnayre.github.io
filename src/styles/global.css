@@ -319,11 +319,49 @@ a:focus {
 }
 
 .blog-post-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  list-style: none;
+  padding: var(--spacing-0);
   margin: var(--spacing-0);
 }
 
-.gatsby-highlight {
-  margin-bottom: var(--spacing-8);
+.blog-post img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto var(--spacing-8);
+}
+
+/* Code */
+
+code,
+pre {
+  font-family: Consolas, "Bitstream Vera Sans Mono", "Courier New", Courier,
+    monospace;
+  tab-size: 4;
+}
+
+pre {
+  font-size: 0.9em;
+  line-height: 1.2em;
+  padding: 1em;
+  margin: 0.5em 0 var(--spacing-8);
+  overflow: auto;
+  border-radius: 6px;
+}
+
+/* Shiki sets an inline background; keep the old light grey. */
+pre.astro-code {
+  background-color: #f6f8fa !important;
+}
+
+:not(pre) > code {
+  font-size: 0.9em;
+  padding: 1px 0.2em;
+  background-color: #1b1f230d;
+  border-radius: 4px;
 }
 
 /* Media queries */

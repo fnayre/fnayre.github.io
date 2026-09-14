@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro"
+import Bio from "../components/Bio.astro"
+import { excerpt, formatDate, getPosts, postUrl } from "../site"
+
+const posts = await getPosts()
+---
+
+<Layout title="All posts">
+  <Bio />
+  <ol style="list-style: none">
+    {
+      posts.map((post) => (
+        <li>
+          <article
+            class="post-list-item"
+            itemscope
+            itemtype="http://schema.org/Article"
+          >
+            <header>
+              <h2>
+                <a href={postUrl(post)} itemprop="url">
+                  <span itemprop="headline">{post.data.title}</span>
+                </a>
+              </h2>
+              <small>{formatDate(post.data.date)}</small>
+            </header>
+            <section>
+              <p itemprop="description">
+                {post.data.description ?? excerpt(post)}
+              </p>
+            </section>
+          </article>
+        </li>
+      ))
+    }
+  </ol>
+</Layout>

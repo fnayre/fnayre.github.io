@@ -1,0 +1,69 @@
+---
+import "@fontsource/montserrat/400.css"
+import "@fontsource/montserrat/700.css"
+import "@fontsource/montserrat/900.css"
+import "@fontsource/merriweather/400.css"
+import "@fontsource/merriweather/400-italic.css"
+import "@fontsource/merriweather/700.css"
+import "../styles/normalize.css"
+import "../styles/global.css"
+import { SITE } from "../site"
+
+interface Props {
+  title: string
+  description?: string
+  type?: "website" | "article"
+}
+
+const { title, description = SITE.description, type = "website" } = Astro.props
+const fullTitle = `${title} | ${SITE.title}`
+const isRootPath = Astro.url.pathname === "/"
+const canonical = new URL(Astro.url.pathname, Astro.site)
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href="/rss.xml"
+    />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content={SITE.twitter} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <div class="global-wrapper" data-is-root-path={String(isRootPath)}>
+      <header class="global-header">
+        {
+          isRootPath ? (
+            <h1 class="main-heading">
+              <a href="/">{SITE.title}</a>
+            </h1>
+          ) : (
+            <a class="header-link-home" href="/">
+              {SITE.title}
+            </a>
+          )
+        }
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer></footer>
+    </div>
+  </body>
+</html>

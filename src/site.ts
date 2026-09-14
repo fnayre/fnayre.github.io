@@ -10,10 +10,13 @@ export const SITE = {
 
 export type Post = CollectionEntry<"blog">
 
-/** All posts, newest first. */
+/** All posts, newest first. Same-date posts fall back to their file name. */
 export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection("blog")
-  return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  return posts.sort(
+    (a, b) =>
+      b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id),
+  )
 }
 
 export const postUrl = (post: Post) => `/${post.id}/`
